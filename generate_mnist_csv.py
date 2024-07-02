@@ -31,7 +31,6 @@ class NeuralNetwork:
 
     def log_loss(self):
         softmax = self.forward_propagation()
-        print(softmax)
         size = self.train_matrix.shape[1]
         epsilon = 1e-15
         log_loss = (
@@ -43,6 +42,13 @@ class NeuralNetwork:
             )
         )
         return log_loss
+    
+    def gradient(self):
+        size = self.train_matrix.shape[1]
+        predictions = self.forward_propagation()
+        dw = 1 / size * self.train_matrix.dot(predictions.T - self.answer.T)
+        db = 1 / size * np.sum(predictions - self.answer)
+        return (dw, db)
 
     def train(self):
         loss = self.log_loss()
@@ -54,7 +60,7 @@ class NeuralNetwork:
 
 def load_train_mnist() -> tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]]:
     train_dataset = keras.datasets.mnist.load_data()[0]
-    return train_dataset[0].reshape(60000, 784).T, train_dataset[1]
+    return train_dataset[0].reshape(60000, 784).T, keras.utils.to_categorical(train_dataset[1]).T
 
 
 def load_test_mnist() -> npt.NDArray[np.uint8]:
@@ -63,4 +69,4 @@ def load_test_mnist() -> npt.NDArray[np.uint8]:
 
 if __name__ == "__main__":
     network = NeuralNetwork()
-    network.train()
+    dw, db = network.gradient()
