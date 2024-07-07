@@ -4,6 +4,7 @@ import keras  # type: ignore
 
 from numpy import typing as npt
 
+from PIL import Image
 from tqdm import tqdm
 from typing import Any
 
@@ -15,7 +16,7 @@ class NeuralNetwork:
         self.vector_weight = np.random.rand(784, 10).T
         self.train_matrix, self.answer = load_train_mnist()
         self.test_matrix, self.test_labels = load_test_mnist()
-        self.bias = np.zeros((10, 1))
+        self.bias = np.zeros((10, 1), dtype=np.float64)
         self.learning_rate = 0.01
         self.losses: list[np.floating[Any]] = []
 
@@ -113,17 +114,22 @@ class NeuralNetwork:
         accuracy = np.mean(test_predictions == test_labels)  # type: ignore
         print(f"Test Accuracy: {accuracy * 100:.2f}%")
 
-    def predict(self, image: npt.NDArray[np.uint8]) -> Any:
-        """Predict function, predict digit in the image
+    def predict(self, fp: str) -> int:
+        """Predict function, predict the digit in the image
 
         Args:
-            image (npt.NDArray[np.uint8]): The image to predict
+            fp (str): The path to the image
 
         Returns:
             Any: The prediction of the image
         """
-        prediction = self.forward_propagation(image)
-        return np.argmax(prediction, axis=0)
+        image = Image.open(fp).convert("L")
+        image = np.asarray(image)
+        if image.shape != (28, 28):
+            raise ValueError("The image must be 28x28 pixels")
+        image = image.reshape(784, 1)
+        predictions = self.forward_propagation(image)
+        return np.argmax(predictions, axis=0)[0]
 
     def save(self, path: str) -> None:
         """Save the model
@@ -164,3 +170,4 @@ if __name__ == "__main__":
     network.train()
     print(network.training_time)
     network.test()
+    network.save("single_neuron_mnist.pkl")
