@@ -12,12 +12,13 @@ import numpy as np
 
 
 class NeuralNetwork:
-    def __init__(self) -> None:
+    def __init__(self, nb_epoch: int = 100, learning_rate: float | int = 0.01) -> None:
         self.vector_weight = np.random.rand(784, 10).T
         self.train_matrix, self.answer = load_train_mnist()
         self.test_matrix, self.test_labels = load_test_mnist()
         self.bias = np.zeros((10, 1), dtype=np.float64)
-        self.learning_rate = 0.01
+        self.nb_epoch = nb_epoch
+        self.learning_rate = learning_rate
         self.losses: list[np.floating[Any]] = []
 
     def activation(self, Z: npt.NDArray[np.float64]) -> np.ndarray[Any, np.dtype[Any]]:
@@ -101,7 +102,7 @@ class NeuralNetwork:
     def train(self) -> tuple[np.ndarray[Any, np.dtype[Any]], Any]:
         """Train function, train the model and plot the losses"""
         start = time.time()
-        for _ in tqdm(range(150)):
+        for _ in tqdm(range(self.nb_epoch)):
             self.update()
         self.training_time = round(time.time() - start, 3)
         return (self.vector_weight, self.bias)
@@ -170,4 +171,3 @@ if __name__ == "__main__":
     network.train()
     print(network.training_time)
     network.test()
-    network.save("single_neuron_mnist.pkl")
