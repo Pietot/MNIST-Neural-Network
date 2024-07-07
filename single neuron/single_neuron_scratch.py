@@ -20,6 +20,7 @@ class NeuralNetwork:
         self.nb_epoch = nb_epoch
         self.learning_rate = learning_rate
         self.losses: list[np.floating[Any]] = []
+        self.accuracies: list[np.floating[Any]] = []
 
     def activation(self, Z: npt.NDArray[np.float64]) -> np.ndarray[Any, np.dtype[Any]]:
         """Activation function using ReLU
@@ -104,6 +105,7 @@ class NeuralNetwork:
         start = time.time()
         for _ in tqdm(range(self.nb_epoch)):
             self.update()
+            self.accuracies.append(round(np.mean(np.argmax(self.forward_propagation(self.train_matrix), axis=0) == np.argmax(self.answer, axis=0)) * 100, 2))  # type: ignore
         self.training_time = round(time.time() - start, 3)
         return (self.vector_weight, self.bias)
 
