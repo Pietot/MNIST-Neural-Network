@@ -9,7 +9,7 @@ This repository contains a severals neural network that can recognize handwritte
 
 ## 1. [Single neuron network](#1---single-neuron-network)
 
-### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I. [Single neuron from scratch](#I.-single-neuron-from-scratch)
+### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I. [Single neuron from scratch](#I.---single-neuron-from-scratch)
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; II. [Single neuron with PyTorch](#)
 
