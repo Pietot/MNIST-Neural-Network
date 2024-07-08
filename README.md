@@ -54,7 +54,7 @@ Here is the architecture of the network:
 </p>
 <br>
 
-### &nbsp;&nbsp;&nbsp;&nbsp;I. Single neuron from scratch
+### I. Single neuron from scratch
 
 On my computer, the network was able to reach an average accuracy of 90% on the test set after 100 epochs and a learning rate of 0.01. The training time was around 30 seconds.
 
