@@ -9,7 +9,7 @@ This repository contains a severals neural network that can recognize handwritte
 
 ## 1. [Single neuron network](#1---single-neuron-network)
 
-### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I. [Single neuron from scratch](#I.---single-neuron-from-scratch)
+### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I. [Single neuron from scratch](#i---single-neuron-from-scratch)
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; II. [Single neuron with PyTorch](#)
 
@@ -54,7 +54,7 @@ Here is the architecture of the network:
 </p>
 <br>
 
-### I. Single neuron from scratch
+### I - Single neuron from scratch
 
 On my computer, the network was able to reach an average accuracy of 90% on the test set after 100 epochs and a learning rate of 0.01. The training time was around 30 seconds.
 
