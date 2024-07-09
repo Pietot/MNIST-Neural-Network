@@ -1,17 +1,19 @@
-import time
+"""Neural Network with a single neuron built from scratch"""
+
 import pickle
-import keras  # type: ignore
-
-from numpy import typing as npt
-
-from PIL import Image
-from tqdm import tqdm
+import time
 from typing import Any
 
+import keras  # type: ignore
 import numpy as np
+from numpy import typing as npt
+from PIL import Image
+from tqdm import tqdm
 
 
 class NeuralNetwork:
+    """Neural Network class"""
+
     def __init__(self, nb_epoch: int = 100, learning_rate: float | int = 0.01) -> None:
         self.vector_weight = np.random.rand(784, 10).T
         self.train_matrix, self.answer = load_train_mnist()
@@ -23,18 +25,20 @@ class NeuralNetwork:
         self.accuracies: list[np.floating[Any]] = []
         self.training_time: float = 0.0
 
-    def activation(self, Z: npt.NDArray[np.float64]) -> np.ndarray[Any, np.dtype[Any]]:
+    def activation(
+        self, weighted_sum: npt.NDArray[np.float64]
+    ) -> np.ndarray[Any, np.dtype[Any]]:
         """Activation function using ReLU
 
         Args:
-            Z (npt.NDArray[np.float64]): The input to the activation function
+            weighted_sum (npt.NDArray[np.float64]): The input to the activation function
 
         Returns:
             np.ndarray[Any, np.dtype[Any]]: The output of the activation function
         """
-        return np.maximum(0, Z)
+        return np.maximum(0, weighted_sum)
 
-    def softmax(self, A: npt.NDArray[np.float64]) -> Any:
+    def softmax(self, activation: npt.NDArray[np.float64]) -> Any:
         """Softmax function, formula: exp(A - max(A)) / sum(exp(A - max(A)))
 
         Args:
@@ -43,8 +47,8 @@ class NeuralNetwork:
         Returns:
             Any: The output of the softmax function
         """
-        exp_A = np.exp(A - np.max(A, axis=0, keepdims=True))
-        return exp_A / np.sum(exp_A, axis=0, keepdims=True)
+        exp_activation = np.exp(activation - np.max(activation, axis=0, keepdims=True))
+        return exp_activation / np.sum(exp_activation, axis=0, keepdims=True)
 
     def forward_propagation(self, matrix: npt.NDArray[np.uint8]) -> Any:
         """Forward propagation function, do the matrix multiplication,
@@ -56,12 +60,13 @@ class NeuralNetwork:
         Returns:
             Any: The output of the forward propagation
         """
-        Z = self.vector_weight.dot(matrix) + self.bias
-        A = self.activation(Z)
-        return self.softmax(A)
+        weighted_seum = self.vector_weight.dot(matrix) + self.bias
+        activation = self.activation(weighted_seum)
+        return self.softmax(activation)
 
     def log_loss(self, softmax: npt.NDArray[np.float64]) -> np.floating[Any]:
-        """Log loss function, formula: -1 / size * sum(y * log(softmax) + (1 - y) * log(1 - softmax))
+        """Log loss function, formula:
+            -1 / size * sum(y * log(softmax) + (1 - y) * log(1 - softmax))
 
         Args:
             softmax (npt.NDArray[np.float64]): The output of the softmax function
