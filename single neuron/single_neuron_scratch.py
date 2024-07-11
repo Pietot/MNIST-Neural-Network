@@ -207,6 +207,7 @@ def load_test_mnist() -> tuple[Any, Any]:
 
 
 if __name__ == "__main__":
-    with open("single_neuron.pkl", "rb") as file:
-        network = pickle.load(file)
-    network.test_and_show_fails(20)
+    network = NeuralNetwork()
+    network.train()
+    print(f"Training time: {network.training_time} seconds")
+    network.test()
