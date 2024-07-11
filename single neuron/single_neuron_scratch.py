@@ -6,6 +6,7 @@ from typing import Any
 
 import keras  # type: ignore
 import numpy as np
+from matplotlib import pyplot as plt
 from numpy import typing as npt
 from PIL import Image
 from tqdm import tqdm
@@ -113,13 +114,15 @@ class NeuralNetwork:
         self.training_time = round(time.time() - start, 3)
         return (self.vector_weight, self.bias)
 
-    def test(self) -> None:
+    def test(self) -> tuple[np.ndarray[Any, np.dtype[Any]], Any]:
         """Test function, test the model and print the accuracy"""
         test_predictions = self.forward_propagation(self.test_matrix)
         test_predictions = np.argmax(test_predictions, axis=0)
         test_labels = np.argmax(self.test_labels, axis=0)
         accuracy = np.mean(test_predictions == test_labels)  # type: ignore
         print(f"Test Accuracy: {accuracy * 100:.2f}%")
+        failures = np.where(test_predictions != test_labels)[0]
+        return failures, test_predictions
 
     def predict(self, fp: str) -> int:
         """Predict function, predict the digit in the image
@@ -137,6 +140,37 @@ class NeuralNetwork:
         image = image.reshape(784, 1)
         predictions = self.forward_propagation(image)
         return np.argmax(predictions, axis=0)[0]
+
+    def test_and_show_fails(self, number: int) -> None:
+        """Show the failures of the model.
+
+        Args:
+            number (int): The number of failures to show.
+        """
+        failures, test_predictions = self.test()
+        test_labels = np.argmax(self.test_labels, axis=0)
+
+        if number > len(failures):
+            number = len(failures)
+            print(f"Only {number} failures found.")
+
+        plt.figure(figsize=(10, 10))  # type: ignore
+        for i in range(number):
+            index = failures[i]
+            image = self.test_matrix[:, index].reshape(28, 28)
+            true_label = test_labels[index]
+            predicted_label = test_predictions[index]
+
+            plt.subplot(number // 3 + 1, 3, i + 1)  # type: ignore
+            plt.imshow(image, cmap="gray")  # type: ignore
+            plt.title(f"True: {true_label}, Pred: {predicted_label}")  # type: ignore
+            plt.axis("off")  # type: ignore
+
+        # Adjust layout to remove excess white space
+        plt.subplots_adjust(
+            hspace=0.5, wspace=0.5, top=0.9, bottom=0.1, left=0.1, right=0.9
+        )
+        plt.show()  # type: ignore
 
     def save(self, path: str) -> None:
         """Save the model
@@ -173,7 +207,6 @@ def load_test_mnist() -> tuple[Any, Any]:
 
 
 if __name__ == "__main__":
-    network = NeuralNetwork()
-    network.train()
-    print(network.training_time)
-    network.test()
+    with open("single_neuron.pkl", "rb") as file:
+        network = pickle.load(file)
+    network.test_and_show_fails(20)
