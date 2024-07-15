@@ -1,5 +1,8 @@
-# NMIST Dataset
+# NMIST Dataset for PyTorch
 /MNIST
+
+# MNIST Dataset for TensorFlow
+/downloads
 
 # My custom numbers to test the model
 /assets/images/custom_numbers
