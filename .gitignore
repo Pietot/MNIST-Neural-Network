@@ -1,2 +1,5 @@
 # NMIST Dataset
 /MNIST
+
+# My custom numbers to test the model
+/assets/images/custom_numbers
