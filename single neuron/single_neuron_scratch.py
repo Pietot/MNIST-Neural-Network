@@ -124,16 +124,16 @@ class NeuralNetwork:
         failures = np.where(test_predictions != test_labels)[0]
         return failures, test_predictions
 
-    def predict(self, fp: str) -> int:
+    def predict(self, image_path: str) -> int:
         """Predict function, predict the digit in the image
 
         Args:
-            fp (str): The path to the image
+            image_path (str): The path to the image
 
         Returns:
             Any: The prediction of the image
         """
-        image = Image.open(fp).convert("L")
+        image = Image.open(image_path).convert("L")
         image = np.asarray(image)
         if image.shape != (28, 28):
             raise ValueError("The image must be 28x28 pixels")
@@ -148,6 +148,7 @@ class NeuralNetwork:
             number (int): The number of failures to show.
         """
         failures, test_predictions = self.test()
+        print(f"Number of failures: {len(failures)}")
         test_labels = np.argmax(self.test_labels, axis=0)
 
         if number > len(failures):
