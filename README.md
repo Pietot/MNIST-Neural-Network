@@ -42,61 +42,64 @@ And here's what the loss and precision curves roughly look like for the 3 versio
 
 - Simple Perceptron.
 
-| Framework  | Accuracy | Training Time | Epochs | Learning Rate |
-| ---------- | -------- | ------------- | ------ | ------------- |
-| Vanilla    | ~90%     | ~30s          | 100    | 0.01          |
-| Pytorch    | ~90%     | ~0.35s        | 100    | 0.01          |
-| TensorFlow |          |               | 100    | 0.01          |
+| Framework  | Accuracy | Training Time | Epochs | Learning Rate | Device |
+| ---------- | -------- | ------------- | ------ | ------------- | ------ |
+| Vanilla    | ~90%     | ~30s          | 100    | 0.01          | CPU    |
+| Pytorch    | ~90%     | ~0.35s        | 100    | 0.01          | GPU    |
+| TensorFlow |          |               | 100    | 0.01          | CPU    |
 
 - Deep Neural Network.
 
-| Framework  | Accuracy | Training Time | Epochs | Learning Rate |
-| ---------- | -------- | ------------- | ------ | ------------- |
-| Vanilla    |          |               | 100    | 0.01          |
-| Pytorch    |          |               | 100    | 0.01          |
-| TensorFlow |          |               | 100    | 0.01          |
+| Framework  | Accuracy | Training Time | Epochs | Learning Rate | Device |
+| ---------- | -------- | ------------- | ------ | ------------- | ------ |
+| Vanilla    |          |               | 100    | 0.01          | CPU    |
+| Pytorch    |          |               | 100    | 0.01          | GPU    |
+| TensorFlow |          |               | 100    | 0.01          | CPU    |
 
 - Convolutional Neural Network.
 
-| Framework  | Accuracy | Training Time | Epochs | Learning Rate |
-| ---------- | -------- | ------------- | ------ | ------------- |
-| Vanilla    |          |               | 100    | 0.01          |
-| Pytorch    |          |               | 100    | 0.01          |
-| TensorFlow |          |               | 100    | 0.01          |
+| Framework  | Accuracy | Training Time | Epochs | Learning Rate | Device |
+| ---------- | -------- | ------------- | ------ | ------------- | ------ |
+| Vanilla    |          |               | 100    | 0.01          | CPU    |
+| Pytorch    |          |               | 100    | 0.01          | GPU    |
+| TensorFlow |          |               | 100    | 0.01          | CPU    |
 
 - AlexNet.
 
-| Framework  | Accuracy | Training Time | Epochs | Learning Rate |
-| ---------- | -------- | ------------- | ------ | ------------- |
-| Vanilla    |          |               | 100    | 0.01          |
-| Pytorch    |          |               | 100    | 0.01          |
-| TensorFlow |          |               | 100    | 0.01          |
+| Framework  | Accuracy | Training Time | Epochs | Learning Rate | Device |
+| ---------- | -------- | ------------- | ------ | ------------- | ------ |
+| Vanilla    |          |               | 100    | 0.01          | CPU    |
+| Pytorch    |          |               | 100    | 0.01          | GPU    |
+| TensorFlow |          |               | 100    | 0.01          | CPU    |
 
 ### Here are tables comparing the performance of the different neural networks depending on the framework used:
 
 - Neural Network built from scratch using only **numpy**.
 
-| Framework         | Accuracy | Training Time | Epochs | Learning Rate |
-| ----------------- | -------- | ------------- | ------ | ------------- |
-| Simple Perceptron | ~90%     | ~30s          | 100    | 0.01          |
-| DNN               |          |               | 100    | 0.01          |
-| CNN               |          |               | 100    | 0.01          |
-| AlexNet           |          |               | 100    | 0.01          |
+| Framework         | Accuracy | Training Time | Epochs | Learning Rate | Device |
+| ----------------- | -------- | ------------- | ------ | ------------- | ------ |
+| Simple Perceptron | ~90%     | ~30s          | 100    | 0.01          | CPU    |
+| DNN               |          |               | 100    | 0.01          | CPU    |
+| CNN               |          |               | 100    | 0.01          | CPU    |
+| AlexNet           |          |               | 100    | 0.01          | CPU    |
 
 - Neural Network built with **PyTorch**.
 
-| Neural Network    | Accuracy | Training Time | Epochs | Learning Rate |
-| ----------------- | -------- | ------------- | ------ | ------------- |
-| Simple Perceptron | ~90%     | ~0.35s        | 100    | 0.01          |
-| DNN               |          |               | 100    | 0.01          |
-| CNN               |          |               | 100    | 0.01          |
-| AlexNet           |          |               | 100    | 0.01          |
+| Neural Network    | Accuracy | Training Time | Epochs | Learning Rate | Device |
+| ----------------- | -------- | ------------- | ------ | ------------- | ------ |
+| Simple Perceptron | ~90%     | ~0.35s        | 100    | 0.01          | GPU    |
+| DNN               |          |               | 100    | 0.01          | GPU    |
+| CNN               |          |               | 100    | 0.01          | GPU    |
+| AlexNet           |          |               | 100    | 0.01          | GPU    |
 
 - Neural Network built with **TensorFlow**.
 
-| Neural Network    | Accuracy | Training Time | Epochs | Learning Rate |
-| ----------------- | -------- | ------------- | ------ | ------------- |
-| Simple Perceptron |          |               | 100    | 0.01          |
-| DNN               |          |               | 100    | 0.01          |
-| CNN               |          |               | 100    | 0.01          |
-| AlexNet           |          |               | 100    | 0.01          |
+| Neural Network    | Accuracy | Training Time | Epochs | Learning Rate | Device |
+| ----------------- | -------- | ------------- | ------ | ------------- | ------ |
+| Simple Perceptron |          |               | 100    | 0.01          | CPU    |
+| DNN               |          |               | 100    | 0.01          | CPU    |
+| CNN               |          |               | 100    | 0.01          | CPU    |
+| AlexNet           |          |               | 100    | 0.01          | CPU    |
+
+> **Note**: These values can change depending on the version of Python and your PC<br><br>
+> For these benchmarks, I used Python 3.12.4 64-bit implemented with CPython on a ryzen 5 3600, rtx 2060 with 2\*8GB of RAM clocked at 3600Hz on Windows 10.
