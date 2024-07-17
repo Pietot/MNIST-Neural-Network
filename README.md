@@ -3,7 +3,10 @@
 ![Static Badge](https://img.shields.io/badge/made_in-France-red?labelColor=blue)
 ![Static Badge](https://img.shields.io/badge/language-Python-f7d54d?labelColor=4771a4)
 
-This repository contains a severals neural network that can recognize handwritten digits from the MNIST dataset. Neural networks are either made from scratch using only the **numpy** library, either build with frameworks like **TensorFlow** or **PyTorch**.
+This repository contains a severals neural network that can recognize handwritten digits from the MNIST dataset. Neural networks are either made from scratch using only the **CuPy** library, either build with frameworks like **PyTorch** or **TensorFlow**.
+
+> **Note**: The MNIST dataset is a dataset of 60,000 small square 28x28 pixel grayscale images of handwritten single digits between 0 and 9. The dataset also includes a test set of 10,000 images.<br><br>
+> CuPy is an open-source array library accelerated with NVIDIA CUDA. It allows you to perform operations on a GPU. It is a drop-in replacement for NumPy.
 
 ## Summary
 
@@ -44,7 +47,7 @@ And here's what the loss and precision curves roughly look like for the 3 versio
 
 | Framework  | Accuracy | Training Time | Epochs | Learning Rate | Device |
 | ---------- | -------- | ------------- | ------ | ------------- | ------ |
-| Vanilla    | ~90%     | ~30s          | 100    | 0.01          | CPU    |
+| Vanilla    | ~90%     | ~10s          | 100    | 0.01          | GPU    |
 | Pytorch    | ~90%     | ~0.35s        | 100    | 0.01          | GPU    |
 | TensorFlow |          |               | 100    | 0.01          | CPU    |
 
@@ -52,7 +55,7 @@ And here's what the loss and precision curves roughly look like for the 3 versio
 
 | Framework  | Accuracy | Training Time | Epochs | Learning Rate | Device |
 | ---------- | -------- | ------------- | ------ | ------------- | ------ |
-| Vanilla    |          |               | 100    | 0.01          | CPU    |
+| Vanilla    |          |               | 100    | 0.01          | GPU    |
 | Pytorch    |          |               | 100    | 0.01          | GPU    |
 | TensorFlow |          |               | 100    | 0.01          | CPU    |
 
@@ -60,7 +63,7 @@ And here's what the loss and precision curves roughly look like for the 3 versio
 
 | Framework  | Accuracy | Training Time | Epochs | Learning Rate | Device |
 | ---------- | -------- | ------------- | ------ | ------------- | ------ |
-| Vanilla    |          |               | 100    | 0.01          | CPU    |
+| Vanilla    |          |               | 100    | 0.01          | GPU    |
 | Pytorch    |          |               | 100    | 0.01          | GPU    |
 | TensorFlow |          |               | 100    | 0.01          | CPU    |
 
@@ -68,20 +71,20 @@ And here's what the loss and precision curves roughly look like for the 3 versio
 
 | Framework  | Accuracy | Training Time | Epochs | Learning Rate | Device |
 | ---------- | -------- | ------------- | ------ | ------------- | ------ |
-| Vanilla    |          |               | 100    | 0.01          | CPU    |
+| Vanilla    |          |               | 100    | 0.01          | GPU    |
 | Pytorch    |          |               | 100    | 0.01          | GPU    |
 | TensorFlow |          |               | 100    | 0.01          | CPU    |
 
 ### Here are tables comparing the performance of the different neural networks depending on the framework used:
 
-- Neural Network built from scratch using only **numpy**.
+- Neural Network built from scratch using only **CuPy**.
 
 | Framework         | Accuracy | Training Time | Epochs | Learning Rate | Device |
 | ----------------- | -------- | ------------- | ------ | ------------- | ------ |
-| Simple Perceptron | ~90%     | ~30s          | 100    | 0.01          | CPU    |
-| DNN               |          |               | 100    | 0.01          | CPU    |
-| CNN               |          |               | 100    | 0.01          | CPU    |
-| AlexNet           |          |               | 100    | 0.01          | CPU    |
+| Simple Perceptron | ~90%     | ~10s          | 100    | 0.01          | GPU    |
+| DNN               |          |               | 100    | 0.01          | GPU    |
+| CNN               |          |               | 100    | 0.01          | GPU    |
+| AlexNet           |          |               | 100    | 0.01          | GPU    |
 
 - Neural Network built with **PyTorch**.
 
