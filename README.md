@@ -49,7 +49,7 @@ And here's what the loss and precision curves roughly look like for the 3 versio
 | ---------- | -------- | ------------- | ------ | ------------- | ------ |
 | Vanilla    | ~90%     | ~10s          | 100    | 0.01          | GPU    |
 | Pytorch    | ~90%     | ~0.35s        | 100    | 0.01          | GPU    |
-| TensorFlow |          |               | 100    | 0.01          | CPU    |
+| TensorFlow |          |               | 100    | 0.01          | GPU    |
 
 - Deep Neural Network.
 
@@ -57,7 +57,7 @@ And here's what the loss and precision curves roughly look like for the 3 versio
 | ---------- | -------- | ------------- | ------ | ------------- | ------ |
 | Vanilla    |          |               | 100    | 0.01          | GPU    |
 | Pytorch    |          |               | 100    | 0.01          | GPU    |
-| TensorFlow |          |               | 100    | 0.01          | CPU    |
+| TensorFlow |          |               | 100    | 0.01          | GPU    |
 
 - Convolutional Neural Network.
 
@@ -65,7 +65,7 @@ And here's what the loss and precision curves roughly look like for the 3 versio
 | ---------- | -------- | ------------- | ------ | ------------- | ------ |
 | Vanilla    |          |               | 100    | 0.01          | GPU    |
 | Pytorch    |          |               | 100    | 0.01          | GPU    |
-| TensorFlow |          |               | 100    | 0.01          | CPU    |
+| TensorFlow |          |               | 100    | 0.01          | GPU    |
 
 - AlexNet.
 
@@ -73,7 +73,7 @@ And here's what the loss and precision curves roughly look like for the 3 versio
 | ---------- | -------- | ------------- | ------ | ------------- | ------ |
 | Vanilla    |          |               | 100    | 0.01          | GPU    |
 | Pytorch    |          |               | 100    | 0.01          | GPU    |
-| TensorFlow |          |               | 100    | 0.01          | CPU    |
+| TensorFlow |          |               | 100    | 0.01          | GPU    |
 
 ### Here are tables comparing the performance of the different neural networks depending on the framework used:
 
@@ -99,10 +99,10 @@ And here's what the loss and precision curves roughly look like for the 3 versio
 
 | Neural Network    | Accuracy | Training Time | Epochs | Learning Rate | Device |
 | ----------------- | -------- | ------------- | ------ | ------------- | ------ |
-| Simple Perceptron |          |               | 100    | 0.01          | CPU    |
-| DNN               |          |               | 100    | 0.01          | CPU    |
-| CNN               |          |               | 100    | 0.01          | CPU    |
-| AlexNet           |          |               | 100    | 0.01          | CPU    |
+| Simple Perceptron |          |               | 100    | 0.01          | GPU    |
+| DNN               |          |               | 100    | 0.01          | GPU    |
+| CNN               |          |               | 100    | 0.01          | GPU    |
+| AlexNet           |          |               | 100    | 0.01          | GPU    |
 
 > **Note**: These values can change depending on the version of Python and your PC<br><br>
 > For these benchmarks, I used Python 3.12.4 64-bit implemented with CPython on a ryzen 5 3600, rtx 2060 with 2\*8GB of RAM clocked at 3600Hz on Windows 10.
