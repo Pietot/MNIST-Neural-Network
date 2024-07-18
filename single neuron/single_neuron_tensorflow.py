@@ -12,7 +12,18 @@ from tqdm import tqdm
 class NeuralNetwork:
     """Neural Network class"""
 
-    pass
+    def __init__(self, nb_epoch: int = 100, learning_rate: float | int = 0.01) -> None:
+        self.device = tf.config.list_physical_devices("GPU")  # type: ignore
+        if not self.device:  # type: ignore
+            self.device = tf.config.list_physical_devices("CPU")  # type: ignore
+        self.vector_weight = tf.Variable(tf.random.normal((784, 10)))  # type: ignore
+        self.train_matrix, self.answer = load_train_mnist()
+        self.test_matrix, self.test_labels = load_test_mnist()
+        self.bias = tf.Variable(tf.zeros((10, 1)))  # type: ignore
+        self.nb_epoch = nb_epoch
+        self.learning_rate = learning_rate
+        self.losses: list[tf.Tensor] = []
+        self.training_time: float = 0.0
 
 
 def load_train_mnist() -> tuple[tf.Tensor, tf.Tensor]:
@@ -32,7 +43,7 @@ def load_train_mnist() -> tuple[tf.Tensor, tf.Tensor]:
     )
     train_matrix = tf.transpose(tf.reshape(train_matrix, (60000, 784)))  # type: ignore
     train_labels = tf.transpose(tf.one_hot(train_labels, 10))  # type: ignore
-    return train_matrix, train_labels
+    return train_matrix, train_labels  # type: ignore
 
 
 def load_test_mnist() -> tuple[tf.Tensor, tf.Tensor]:
@@ -52,7 +63,7 @@ def load_test_mnist() -> tuple[tf.Tensor, tf.Tensor]:
     )
     test_matrix = tf.transpose(tf.reshape(test_matrix, (10000, 784)))  # type: ignore
     test_labels = tf.transpose(tf.one_hot(test_labels, 10))  # type: ignore
-    return test_matrix, test_labels
+    return test_matrix, test_labels  # type: ignore
 
 
 if __name__ == "__main__":
