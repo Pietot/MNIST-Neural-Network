@@ -108,7 +108,7 @@ class NeuralNetwork:
         self.bias -= self.learning_rate * db  # type: ignore
 
     def train(self) -> tuple[cp.ndarray[Any, cp.dtype[Any]], Any]:  # type: ignore
-        """Train function, train the model and plot the losses"""
+        """Train function, train the model"""
         start = time.time()
         for _ in tqdm(range(self.nb_epoch)):
             self.update()
@@ -169,9 +169,7 @@ class NeuralNetwork:
             plt.axis("off")  # type: ignore
 
         # Adjust layout to remove excess white space
-        plt.subplots_adjust(
-            hspace=0.5, wspace=0.5, top=0.9, bottom=0.1, left=0.1, right=0.9
-        )
+        plt.subplots_adjust(hspace=0.5, wspace=0.5, top=0.9, bottom=0.1, left=0.1, right=0.9)
         plt.show()  # type: ignore
 
     def save(self, path: str) -> None:
