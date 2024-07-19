@@ -113,7 +113,7 @@ class NeuralNetwork:
         self.bias -= self.learning_rate * db
 
     def train(self) -> tuple[torch.Tensor, torch.Tensor]:
-        """Train function, train the model and plot the losses"""
+        """Train function, train the model"""
         start = time.time()
         for _ in tqdm(range(self.nb_epoch)):
             self.update()
@@ -141,6 +141,8 @@ class NeuralNetwork:
         """
         image = Image.open(image_path).convert("L")
         image = torchvision.transforms.ToTensor()(image)
+        if image.shape != (28, 28):
+            raise ValueError("The image must be 28x28 pixels")
         image = image.view(1, 784)
         prediction = self.forward_propagation(image)
         return int(torch.argmax(prediction).item())
