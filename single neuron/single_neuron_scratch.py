@@ -15,7 +15,7 @@ from tqdm import tqdm
 class NeuralNetwork:
     """Neural Network class"""
 
-    def __init__(self, nb_epoch: int = 100, learning_rate: float | int = 0.01) -> None:
+    def __init__(self, nb_epoch: int = 100, learning_rate: float | int = 1) -> None:
         self.vector_weight = cp.random.rand(784, 10).T  # type: ignore
         self.train_matrix, self.answer = load_train_mnist()
         self.test_matrix, self.test_labels = load_test_mnist()
@@ -28,7 +28,7 @@ class NeuralNetwork:
     def activation(  # type: ignore
         self, weighted_sum: npt.NDArray[cp.float64]
     ) -> cp.ndarray[Any, cp.dtype[Any]]:  # type: ignore
-        """Activation function using ReLU
+        """Activation function using ReLU, formula: max(0, weighted_sum)
 
         Args:
             weighted_sum (npt.NDArray[cp.float64]): The input to the activation function
@@ -138,7 +138,7 @@ class NeuralNetwork:
         image = cp.asarray(image)  # type: ignore
         if image.shape != (28, 28):  # type: ignore
             raise ValueError("The image must be 28x28 pixels")
-        image = image.reshape(784, 1)  # type: ignore
+        image = image.reshape(784, 1) / 255  # type: ignore
         predictions = self.forward_propagation(image)  # type: ignore
         return cp.argmax(predictions, axis=0)[0]  # type: ignore
 
@@ -189,7 +189,7 @@ def load_train_mnist() -> tuple[Any, Any]:
         tuple[Any, Any]: The training dataset
     """
     train_dataset = keras.datasets.mnist.load_data()[0]
-    return cp.asarray(train_dataset[0].reshape(60000, 784).T), cp.asarray(  # type: ignore
+    return cp.asarray(train_dataset[0].reshape(60000, 784).T) / 255, cp.asarray(  # type: ignore
         keras.utils.to_categorical(  # type: ignore
             train_dataset[1]
         ).T
@@ -203,7 +203,7 @@ def load_test_mnist() -> tuple[Any, Any]:
         tuple[Any, Any]: The testing dataset
     """
     test_dataset = keras.datasets.mnist.load_data()[1]
-    return cp.asarray(test_dataset[0].reshape(10000, 784).T), cp.asarray(  # type: ignore
+    return cp.asarray(test_dataset[0].reshape(10000, 784).T) / 255, cp.asarray(  # type: ignore
         keras.utils.to_categorical(  # type: ignore
             test_dataset[1]
         ).T
