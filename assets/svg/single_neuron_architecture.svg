@@ -64,9 +64,11 @@
             style="fill: rgb(255, 123, 123); stroke: rgb(255, 0, 0);"></circle>
         <circle r="11.5" class="node" id="2_0" cx="1465.5" cy="479"
             style="fill: rgb(255, 123, 123); stroke: rgb(255, 0, 0);"></circle><text class="text" dy=".35em" x="1045"
-            y="909" style="font-size: 12px; fill: white; font-family: 'Arial'; font-size:15px">Input Layer ∈ ℝ⁷⁸⁴</text><text
-            class="text" dy=".35em" x="1230" y="909" style="font-size: 12px; fill: white; font-family: 'Arial'; font-size:15px">Hidden Layer ∈
-            ℝ¹</text><text class="text" dy=".35em" x="1400" y="909" style="font-size: 12px; fill: white; font-family: 'Arial'; font-size:15px">Output Layer
+            y="909" style="font-size: 12px; fill: white; font-family: 'Arial'; font-size:15px">Input Layer ∈
+            ℝ⁷⁸⁴</text><text class="text" dy=".35em" x="1230" y="909"
+            style="font-size: 12px; fill: white; font-family: 'Arial'; font-size:15px">Hidden Layer ∈
+            ℝ¹</text><text class="text" dy=".35em" x="1400" y="909"
+            style="font-size: 12px; fill: white; font-family: 'Arial'; font-size:15px">Output Layer
             ∈ ℝ¹⁰</text>
         <circle r="11.5" class="node" id="2_1" cx="1465.5" cy="522"
             style="fill: rgb(255, 123, 123); stroke: rgb(255, 0, 0);"></circle>
