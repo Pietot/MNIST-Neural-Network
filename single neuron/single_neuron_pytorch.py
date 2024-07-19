@@ -14,7 +14,7 @@ from tqdm import tqdm
 class NeuralNetwork:
     """Neural Network class"""
 
-    def __init__(self, nb_epoch: int = 100, learning_rate: float | int = 0.01) -> None:
+    def __init__(self, nb_epoch: int = 100, learning_rate: float | int = 1) -> None:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.vector_weight = torch.rand(784, 10).T.to(self.device)
         self.train_matrix = load_train_mnist(self.device)
@@ -26,7 +26,7 @@ class NeuralNetwork:
         self.training_time: float = 0.0
 
     def activation(self, weighted_sum: torch.Tensor) -> torch.Tensor:
-        """Activation function using ReLU
+        """Activation function using ReLU, formula: max(0, weighted_sum)
 
         Args:
             weighted_sum (torch.Tensor): The input to the activation function
@@ -45,9 +45,7 @@ class NeuralNetwork:
         Returns:
             torch.Tensor: The output of the softmax function
         """
-        exp_activation = torch.exp(
-            activation - torch.max(activation, dim=0, keepdim=True).values
-        )
+        exp_activation = torch.exp(activation - torch.max(activation, dim=0, keepdim=True).values)
         return exp_activation / torch.sum(exp_activation, dim=0, keepdim=True)
 
     def forward_propagation(self, matrix: torch.Tensor) -> torch.Tensor:
@@ -99,9 +97,7 @@ class NeuralNetwork:
         dw = (
             1
             / size
-            * torch.mm(
-                self.train_matrix.data, (predictions.T - self.train_matrix.targets.T)
-            )
+            * torch.mm(self.train_matrix.data, (predictions.T - self.train_matrix.targets.T))
         )
         db = 1 / size * torch.sum(predictions - self.train_matrix.targets)
         return (dw, db)
@@ -140,10 +136,10 @@ class NeuralNetwork:
             int: The prediction
         """
         image = Image.open(image_path).convert("L")
-        image = torchvision.transforms.ToTensor()(image)
+        image = torchvision.transforms.ToTensor()(image).squeeze().to(self.device)
         if image.shape != (28, 28):
             raise ValueError("The image must be 28x28 pixels")
-        image = image.view(1, 784)
+        image = image.view(784, 1) / 255
         prediction = self.forward_propagation(image)
         return int(torch.argmax(prediction).item())
 
@@ -174,9 +170,7 @@ class NeuralNetwork:
             plt.axis("off")  # type: ignore
 
         # Adjust layout to remove excess white space
-        plt.subplots_adjust(
-            hspace=0.5, wspace=0.5, top=0.9, bottom=0.1, left=0.1, right=0.9
-        )
+        plt.subplots_adjust(hspace=0.5, wspace=0.5, top=0.9, bottom=0.1, left=0.1, right=0.9)
         plt.show()  # type: ignore
 
     def save(self, path: str) -> None:
@@ -202,7 +196,7 @@ def load_train_mnist(device: torch.device) -> MNIST:
         transform=torchvision.transforms.ToTensor(),
         download=True,
     )
-    train_dataset.data = train_dataset.data.view(60000, 784).T.float().to(device)
+    train_dataset.data = train_dataset.data.view(60000, 784).T.float().to(device) / 255
     train_dataset.targets = (
         torch.nn.functional.one_hot(  # pylint: disable=E1102
             train_dataset.targets, num_classes=10
@@ -226,7 +220,7 @@ def load_test_mnist(device: torch.device) -> MNIST:
         transform=torchvision.transforms.ToTensor(),
         download=True,
     )
-    test_dataset.data = test_dataset.data.view(10000, 784).T.float().to(device)
+    test_dataset.data = test_dataset.data.view(10000, 784).T.float().to(device) / 255
     test_dataset.targets = (
         torch.nn.functional.one_hot(  # pylint: disable=E1102
             test_dataset.targets, num_classes=10
