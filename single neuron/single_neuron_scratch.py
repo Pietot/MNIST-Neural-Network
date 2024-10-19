@@ -16,9 +16,9 @@ class NeuralNetwork:
     """Neural Network class"""
 
     def __init__(self, nb_epoch: int = 100, learning_rate: float | int = 1) -> None:
-        self.vector_weight = cp.random.rand(784, 10).T  # type: ignore
         self.train_matrix, self.answer = load_train_mnist()
         self.test_matrix, self.test_labels = load_test_mnist()
+        self.vector_weight = cp.random.rand(784, 10).T  # type: ignore
         self.bias = cp.zeros((1,), dtype=cp.float64)  # type: ignore
         self.nb_epoch = nb_epoch
         self.learning_rate = learning_rate
