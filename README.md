@@ -58,8 +58,8 @@ And here's what the loss and precision curves roughly look like for both version
 
 | Framework | Accuracy | Training Time | Epochs | Learning Rate | Device | Accuracy on custom numbers 1\*(0-9) |
 | :-------: | :------: | :-----------: | :----: | :-----------: | :----: | :---------------------------------: |
-|  Vanilla  |   ~89%   |      ~5s      |  100   |       1       |  GPU   |                ~20%                 |
-|  Pytorch  |   ~89%   |    ~0.35s     |  100   |       1       |  GPU   |                ~20%                 |
+|  Vanilla  |   ~88%   |     ~7.5s     |  100   |       1       |  GPU   |                ~20%                 |
+|  Pytorch  |   ~88%   |    ~0.38s     |  100   |       1       |  GPU   |                ~20%                 |
 
 - Deep Neural Network.
 
@@ -88,7 +88,7 @@ And here's what the loss and precision curves roughly look like for both version
 
 |     Framework     | Accuracy | Training Time | Epochs | Learning Rate | Device | Accuracy on custom numbers 1\*(0-9) |
 | :---------------: | :------: | :-----------: | :----: | :-----------: | :----: | :---------------------------------: |
-| Simple Perceptron |   ~90%   |     ~10s      |  100   |     0.01      |  GPU   |                ~20%                 |
+| Simple Perceptron |   ~88%   |     ~7.5s     |  100   |       1       |  GPU   |                ~20%                 |
 |        DNN        |          |               |  100   |     0.01      |  GPU   |                                     |
 |        CNN        |          |               |  100   |     0.01      |  GPU   |                                     |
 |      AlexNet      |          |               |  100   |     0.01      |  GPU   |                                     |
@@ -97,7 +97,7 @@ And here's what the loss and precision curves roughly look like for both version
 
 |  Neural Network   | Accuracy | Training Time | Epochs | Learning Rate | Device | Accuracy on custom numbers 1\*(0-9) |
 | :---------------: | :------: | :-----------: | :----: | :-----------: | :----: | :---------------------------------: |
-| Simple Perceptron |   ~90%   |    ~0.35s     |  100   |     0.01      |  GPU   |                ~20%                 |
+| Simple Perceptron |   ~88%   |    ~0.38s     |  100   |       1       |  GPU   |                ~20%                 |
 |        DNN        |          |               |  100   |     0.01      |  GPU   |                                     |
 |        CNN        |          |               |  100   |     0.01      |  GPU   |                                     |
 |      AlexNet      |          |               |  100   |     0.01      |  GPU   |                                     |
