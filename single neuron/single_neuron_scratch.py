@@ -75,8 +75,8 @@ class NeuralNetwork:
         Returns:
             cp.floating[Any]: The log loss
         """
-        size = self.train_matrix.shape[1]
         epsilon = 1e-15
+        size = self.train_matrix.shape[1]
         log_loss = (  # type: ignore
             -1
             / size
@@ -93,10 +93,10 @@ class NeuralNetwork:
         Returns:
             tuple[cp.ndarray[Any, cp.dtype[Any]], Any]: The gradient of the weights and bias
         """
-        size = self.train_matrix.shape[1]
         predictions = self.forward_propagation(self.train_matrix)
         loss = self.log_loss(predictions)
         self.losses.append(loss)
+        size = self.train_matrix.shape[1]
         dw = 1 / size * self.train_matrix.dot(predictions.T - self.answer.T)
         db = 1 / size * cp.sum(predictions - self.answer)  # type: ignore
         return (dw, db)  # type: ignore

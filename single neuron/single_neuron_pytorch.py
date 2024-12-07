@@ -72,8 +72,8 @@ class NeuralNetwork:
         Returns:
             torch.Tensor: The output of the log loss function
         """
-        size = self.train_matrix.data.shape[1]
         epsilon = 1e-15
+        size = self.train_matrix.data.shape[1]
         log_loss = (
             -1
             / size
@@ -90,10 +90,10 @@ class NeuralNetwork:
         Returns:
             tuple[torch.Tensor, torch.Tensor]: The gradient of the weights and bias
         """
-        size = self.train_matrix.data.shape[1]
         predictions = self.forward_propagation(self.train_matrix.data)
         loss = self.log_loss(predictions)
         self.losses.append(loss)
+        size = self.train_matrix.data.shape[1]
         dw = (
             1
             / size
