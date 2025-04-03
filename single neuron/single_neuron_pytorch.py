@@ -192,8 +192,7 @@ def load_train_mnist(device: torch.device) -> MNIST:
         MNIST: The training dataset
     """
     train_dataset = torchvision.datasets.MNIST(
-        root="C:\\Users\\Bapti\\OneDrive\\Bureau\\VS Code/Python\
-\\Solo Project\\Medium Projects\\Autre\\MNIST Neural Network",
+        root="data",
         train=True,
         transform=torchvision.transforms.ToTensor(),
         download=True,
@@ -216,8 +215,7 @@ def load_test_mnist(device: torch.device) -> MNIST:
         MNIST: The testing dataset
     """
     test_dataset = torchvision.datasets.MNIST(
-        root="C:\\Users\\Bapti\\OneDrive\\Bureau\\VS Code/Python\
-\\Solo Project\\Medium Projects\\Autre\\MNIST Neural Network",
+        root="data",
         train=False,
         transform=torchvision.transforms.ToTensor(),
         download=True,
