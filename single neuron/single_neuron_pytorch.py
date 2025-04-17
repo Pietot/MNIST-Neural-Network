@@ -20,7 +20,7 @@ class NeuralNetwork:
         self.test_matrix = load_test_mnist(self.device)
         self.vector_weight = torch.rand(784, 10).T.to(self.device)
         self.bias = torch.zeros(
-            1,
+            (10, 1)
         ).to(self.device)
         self.nb_epoch = nb_epoch
         self.learning_rate = learning_rate
