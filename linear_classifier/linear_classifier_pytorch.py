@@ -1,4 +1,4 @@
-"""Neural Network with a single neuron built with PyTorch"""
+"""Neural Network with entries directly connected to the outputs with PyTorch"""
 
 import pickle
 import time
