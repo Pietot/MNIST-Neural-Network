@@ -1,5 +1,5 @@
 # NMIST Dataset for PyTorch
-/MNIST
+/Data
 
 # My custom numbers to test the model
 /assets/images/custom_numbers
