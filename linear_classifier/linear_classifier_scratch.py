@@ -66,8 +66,8 @@ class NeuralNetwork:
         return self.softmax(activation)  # type: ignore
 
     def log_loss(self, softmax: npt.NDArray[cp.float64]) -> cp.floating[Any]:
-        """Log loss function, formula:
-            -1 / size * sum(y * log(softmax) + (1 - y) * log(1 - softmax))
+        """Log loss function implemented with CCE, formula:
+            -1 / N * sum(y * log(softmax + epsilon))
 
         Args:
             softmax (npt.NDArray[cp.float64]): The output of the softmax function
@@ -82,7 +82,6 @@ class NeuralNetwork:
             / size
             * cp.sum(  # type: ignore
                 self.answer * cp.log(softmax + epsilon)  # type: ignore
-                + (1 - self.answer) * cp.log(1 - softmax + epsilon)  # type: ignore
             )
         )
         return log_loss  # type: ignore

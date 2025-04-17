@@ -19,9 +19,7 @@ class NeuralNetwork:
         self.train_matrix = load_train_mnist(self.device)
         self.test_matrix = load_test_mnist(self.device)
         self.vector_weight = torch.rand(784, 10).T.to(self.device)
-        self.bias = torch.zeros(
-            (10, 1)
-        ).to(self.device)
+        self.bias = torch.zeros((10, 1)).to(self.device)
         self.nb_epoch = nb_epoch
         self.learning_rate = learning_rate
         self.losses: list[torch.Tensor] = []
@@ -65,8 +63,8 @@ class NeuralNetwork:
         return self.softmax(activation)
 
     def log_loss(self, softmax: torch.Tensor) -> torch.Tensor:
-        """Log loss function, formula:
-            -1 / N * sum(y * log(softmax) + (1 - y) * log(1 - softmax))
+        """Log loss function implemented with CCE, formula:
+            -1 / N * sum(y * log(softmax + epsilon))
 
         Args:
             softmax (torch.Tensor): The output of the softmax function
@@ -76,14 +74,7 @@ class NeuralNetwork:
         """
         epsilon = 1e-15
         size = self.train_matrix.data.shape[1]
-        log_loss = (
-            -1
-            / size
-            * torch.sum(
-                self.train_matrix.targets * torch.log(softmax + epsilon)
-                + (1 - self.train_matrix.targets) * torch.log(1 - softmax + epsilon)
-            )
-        )
+        log_loss = -1 / size * torch.sum(self.train_matrix.targets * torch.log(softmax + epsilon))
         return log_loss
 
     def gradient(self) -> tuple[torch.Tensor, torch.Tensor]:
