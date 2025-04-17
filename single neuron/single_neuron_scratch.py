@@ -1,4 +1,4 @@
-"""Neural Network with a single neuron built from scratch"""
+"""Neural Network with entries directly connected to the outputs"""
 
 import pickle
 import time
@@ -19,7 +19,7 @@ class NeuralNetwork:
         self.train_matrix, self.answer = load_train_mnist()
         self.test_matrix, self.test_labels = load_test_mnist()
         self.vector_weight = cp.random.rand(784, 10).T  # type: ignore
-        self.bias = cp.zeros((1,), dtype=cp.float64)  # type: ignore
+        self.bias = cp.zeros((10, 1), dtype=cp.float64)  # type: ignore
         self.nb_epoch = nb_epoch
         self.learning_rate = learning_rate
         self.losses: list[cp.floating[Any]] = []
