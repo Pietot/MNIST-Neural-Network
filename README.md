@@ -54,7 +54,7 @@ Here is the architecture of the network:
     <img src="assets/svg/dnn_architecture.svg" alt="DNN Architecture"/>
 </p>
 
-> **Note**: Layers (including input and output layers): 784-32-32-32-10 neurons.
+> **Note**: Layers (including input and output layers): 784-32-32-10 neurons.
 
 And here's what the loss and precision curves roughly look like for both versions of the network:
 
@@ -78,8 +78,8 @@ And here's what the loss and precision curves roughly look like for both version
 
 | Framework | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
 | :-------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-|  Vanilla  |   ~92%   |     ~88s      |  1000  |     0.025     |       27456       |       138        |  GPU   |
-|  Vanilla  |   ~92%   |               |  1000  |     0.025     |       27456       |       138        |  GPU   |
+|  Vanilla  |   ~93%   |     ~50s      |  500   |      0.2      |       26432       |        74        |  GPU   |
+|  Vanilla  |   ~93%   |               |  500   |      0.2      |       26432       |        74        |  GPU   |
 
 - Convolutional Neural Network
 
@@ -99,21 +99,21 @@ And here's what the loss and precision curves roughly look like for both version
 
 - Neural Network built from scratch using only **CuPy**
 
-|     Framework     | Accuracy | Training Time | Epochs | Learning Rate | Device |
-| :---------------: | :------: | :-----------: | :----: | :-----------: | :----: |
-| Linear Classifier |   ~88%   |      ~6s      |  100   |       1       |  GPU   |
-|        DNN        |   ~92%   |     ~88s      |  1000  |     0.025     |  GPU   |
-|        CNN        |          |               |  100   |               |  GPU   |
-|       LeNet       |          |               |  100   |               |  GPU   |
+|     Framework     | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
+| :---------------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
+| Linear Classifier |   ~88%   |      ~6s      |  100   |       1       |       7840        |        10        |  GPU   |
+|        DNN        |   ~93%   |     ~50s      |  500   |      0.2      |       26432       |        74        |  GPU   |
+|        CNN        |          |               |  100   |               |                   |                  |  GPU   |
+|       LeNet       |          |               |  100   |               |                   |                  |  GPU   |
 
 - Neural Network built with **PyTorch**
 
-|  Neural Network   | Accuracy | Training Time | Epochs | Learning Rate | Device |
-| :---------------: | :------: | :-----------: | :----: | :-----------: | :----: |
-| Linear Classifier |   ~88%   |     ~0.3s     |  100   |       1       |  GPU   |
-|        DNN        |   ~88%   |               |  100   |     0.025     |  GPU   |
-|        CNN        |          |               |  100   |               |  GPU   |
-|       LeNet       |          |               |  100   |               |  GPU   |
+|  Neural Network   | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
+| :---------------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
+| Linear Classifier |   ~88%   |     ~0.3s     |  100   |       1       |       7840        |        10        |  GPU   |
+|        DNN        |   ~93%   |               |  500   |      0.2      |       26432       |        74        |  GPU   |
+|        CNN        |          |               |  100   |               |                   |                  |  GPU   |
+|       LeNet       |          |               |  100   |               |                   |                  |  GPU   |
 
 > **Note**: These values can change depending on the version of Python and your PC<br><br>
 > For these benchmarks, I used Python 3.12.4 64-bit implemented with CPython on a Ryzen 5 3600, rtx 2060 with 2\*8GB of RAM clocked at 3600Hz on Windows 10.
