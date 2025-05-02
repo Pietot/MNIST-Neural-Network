@@ -107,7 +107,11 @@ class NeuralNetwork:
         self.bias -= self.learning_rate * db  # type: ignore
 
     def train(self) -> tuple[cp.ndarray[Any, cp.dtype[Any]], Any]:  # type: ignore
-        """Train function, train the model"""
+        """Train function, train the model
+        
+        Returns:
+            tuple[cp.ndarray[Any, cp.dtype[Any]], Any]: The weights and bias of the model
+        """
         start = time.time()
         for _ in tqdm(range(self.nb_epoch)):
             self.update()
@@ -115,7 +119,11 @@ class NeuralNetwork:
         return (self.vector_weight, self.bias)  # type: ignore
 
     def test(self) -> tuple[cp.ndarray[Any, cp.dtype[Any]], Any]:  # type: ignore
-        """Test function, test the model and print the accuracy"""
+        """Test function, test the model and print the accuracy
+        
+        Returns:
+            tuple[cp.ndarray[Any, cp.dtype[Any]], Any]: The failures and predictions of the model
+        """
         test_predictions = self.forward_propagation(self.test_matrix)
         test_predictions = cp.argmax(test_predictions, axis=0)  # type: ignore
         test_labels = cp.argmax(self.test_labels, axis=0)  # type: ignore
