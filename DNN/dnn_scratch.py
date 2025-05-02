@@ -15,13 +15,11 @@ from tqdm import tqdm
 class NeuralNetwork:
     """Neural Network class"""
 
-    def __init__(self, nb_epoch: int = 1000, learning_rate: float | int = 0.025) -> None:
+    def __init__(self, nb_epoch: int = 250, learning_rate: float | int = 0.2) -> None:
         self.train_matrix, self.answer = load_train_mnist()
         self.test_matrix, self.test_labels = load_test_mnist()
         self.layers: list[list[npt.NDArray[cp.float64]]] = [
             [cp.random.randn(784, 32).T * cp.sqrt(2.0 / 784), cp.zeros((32, 1))],  # type: ignore
-            [cp.random.randn(32, 32).T * cp.sqrt(2.0 / 32), cp.zeros((32, 1))],  # type: ignore
-            [cp.random.randn(32, 32).T * cp.sqrt(2.0 / 32), cp.zeros((32, 1))],  # type: ignore
             [cp.random.randn(32, 32).T * cp.sqrt(2.0 / 32), cp.zeros((32, 1))],  # type: ignore
             [cp.random.randn(32, 10).T * cp.sqrt(2.0 / 32), cp.zeros((10, 1))],  # type: ignore
         ]
