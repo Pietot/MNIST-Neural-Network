@@ -78,8 +78,8 @@ And here's what the loss and precision curves roughly look like for both version
 
 | Framework | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
 | :-------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-|  Vanilla  |   ~93%   |     ~50s      |  500   |      0.2      |       26432       |        74        |  GPU   |
-|  Vanilla  |   ~93%   |               |  500   |      0.2      |       26432       |        74        |  GPU   |
+|  Vanilla  |   ~93%   |     ~50s      |  500   |      0.1      |       26432       |        74        |  GPU   |
+|  Vanilla  |   ~93%   |               |  500   |      0.1      |       26432       |        74        |  GPU   |
 
 - Convolutional Neural Network
 
@@ -102,7 +102,7 @@ And here's what the loss and precision curves roughly look like for both version
 |     Framework     | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
 | :---------------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
 | Linear Classifier |   ~88%   |      ~6s      |  100   |       1       |       7840        |        10        |  GPU   |
-|        DNN        |   ~93%   |     ~50s      |  500   |      0.2      |       26432       |        74        |  GPU   |
+|        DNN        |   ~93%   |     ~50s      |  500   |      0.1      |       26432       |        74        |  GPU   |
 |        CNN        |          |               |  100   |               |                   |                  |  GPU   |
 |       LeNet       |          |               |  100   |               |                   |                  |  GPU   |
 
@@ -111,7 +111,7 @@ And here's what the loss and precision curves roughly look like for both version
 |  Neural Network   | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
 | :---------------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
 | Linear Classifier |   ~88%   |     ~0.3s     |  100   |       1       |       7840        |        10        |  GPU   |
-|        DNN        |   ~93%   |               |  500   |      0.2      |       26432       |        74        |  GPU   |
+|        DNN        |   ~93%   |               |  500   |      0.1      |       26432       |        74        |  GPU   |
 |        CNN        |          |               |  100   |               |                   |                  |  GPU   |
 |       LeNet       |          |               |  100   |               |                   |                  |  GPU   |
 
