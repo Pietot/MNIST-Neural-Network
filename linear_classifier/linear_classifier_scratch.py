@@ -108,7 +108,7 @@ class NeuralNetwork:
 
     def train(self) -> tuple[cp.ndarray[Any, cp.dtype[Any]], Any]:  # type: ignore
         """Train function, train the model
-        
+
         Returns:
             tuple[cp.ndarray[Any, cp.dtype[Any]], Any]: The weights and bias of the model
         """
@@ -120,7 +120,7 @@ class NeuralNetwork:
 
     def test(self) -> tuple[cp.ndarray[Any, cp.dtype[Any]], Any]:  # type: ignore
         """Test function, test the model and print the accuracy
-        
+
         Returns:
             tuple[cp.ndarray[Any, cp.dtype[Any]], Any]: The failures and predictions of the model
         """
@@ -177,6 +177,14 @@ class NeuralNetwork:
 
         # Adjust layout to remove excess white space
         plt.subplots_adjust(hspace=0.5, wspace=0.5, top=0.9, bottom=0.1, left=0.1, right=0.9)
+        plt.show()  # type: ignore
+
+    def show_loss(self) -> None:
+        """Show the loss of the model"""
+        plt.plot(self.losses)  # type: ignore
+        plt.title("Loss")  # type: ignore
+        plt.xlabel("Epoch")  # type: ignore
+        plt.ylabel("Loss")  # type: ignore
         plt.show()  # type: ignore
 
     def save(self, path: str) -> None:
