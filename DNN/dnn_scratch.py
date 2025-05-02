@@ -15,7 +15,7 @@ from tqdm import tqdm
 class NeuralNetwork:
     """Neural Network class"""
 
-    def __init__(self, nb_epoch: int = 250, learning_rate: float | int = 0.2) -> None:
+    def __init__(self, nb_epoch: int = 500, learning_rate: float | int = 0.1) -> None:
         self.train_matrix, self.answer = load_train_mnist()
         self.test_matrix, self.test_labels = load_test_mnist()
         self.layers: list[list[npt.NDArray[cp.float64]]] = [
@@ -145,6 +145,7 @@ class NeuralNetwork:
             gradients = self.backward_propagation(predictions)  # type: ignore
             self.update(gradients)
         self.training_time = round(time.time() - start, 3)
+        self.show_loss()  # type: ignore
         return self.layers
 
     def test(self) -> tuple[cp.ndarray[Any, cp.dtype[Any]], Any]:  # type: ignore
