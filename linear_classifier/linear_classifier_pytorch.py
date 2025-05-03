@@ -1,14 +1,37 @@
 """Neural Network with entries directly connected to the outputs with PyTorch"""
 
-import pickle
 import time
+from typing import Any
 
 import torch
 import torchvision  # type: ignore
 from matplotlib import pyplot as plt
 from PIL import Image
+from torch import Tensor, nn, optim
 from torchvision.datasets.mnist import MNIST  # type: ignore
 from tqdm import tqdm
+
+
+class LinearClassifier(nn.Module):
+    """LinearCLassifier class using PyTorch nn.Module"""
+
+    def __init__(self) -> None:
+        super().__init__()  # type: ignore
+        self.fc = nn.Linear(784, 10)
+        self.relu = nn.ReLU()
+
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+        """Forward pass
+
+        Args:
+            input_tensor: Input data tensor of shape
+
+        Returns:
+            torch.Tensor: Output logits tensor of shape
+        """
+        features = self.fc(input_tensor)
+        activated_features = self.relu(features)
+        return activated_features
 
 
 class NeuralNetwork:
@@ -18,39 +41,19 @@ class NeuralNetwork:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.train_matrix = load_train_mnist(self.device)
         self.test_matrix = load_test_mnist(self.device)
-        self.vector_weight = torch.rand(784, 10).T.to(self.device)
-        self.bias = torch.zeros((10, 1)).to(self.device)
+
+        self.model = LinearClassifier().to(self.device)
+        nn.init.uniform_(self.model.fc.weight, 0, 1)
+        nn.init.zeros_(self.model.fc.bias)
+        self.optimizer = optim.SGD(self.model.parameters(), lr=learning_rate)
+        self.criterion = nn.CrossEntropyLoss()
+
         self.nb_epoch = nb_epoch
-        self.learning_rate = learning_rate
         self.losses: list[torch.Tensor] = []
-        self.training_time: float = 0.0
-
-    def activation(self, weighted_sum: torch.Tensor) -> torch.Tensor:
-        """Activation function using ReLU, formula: max(0, weighted_sum)
-
-        Args:
-            weighted_sum (torch.Tensor): The input to the activation function
-
-        Returns:
-            torch.Tensor: The output of the activation function
-        """
-        return torch.relu(weighted_sum)
-
-    def softmax(self, activation: torch.Tensor) -> torch.Tensor:
-        """Softmax function, formula: exp(A - max(A)) / sum(exp(A - max(A)))
-
-        Args:
-            A (torch.Tensor): The input to the softmax function
-
-        Returns:
-            torch.Tensor: The output of the softmax function
-        """
-        exp_activation = torch.exp(activation - torch.max(activation, dim=0, keepdim=True).values)
-        return exp_activation / torch.sum(exp_activation, dim=0, keepdim=True)
+        self.training_time = 0.0
 
     def forward_propagation(self, matrix: torch.Tensor) -> torch.Tensor:
-        """Forward propagation function, do the matrix multiplication,
-            activation function and softmax function
+        """Forward propagation using the PyTorch model
 
         Args:
             matrix (torch.Tensor): The input matrix
@@ -58,66 +61,51 @@ class NeuralNetwork:
         Returns:
             torch.Tensor: The output of the forward propagation
         """
-        weighted_sum = torch.mm(self.vector_weight, matrix) + self.bias
-        activation = self.activation(weighted_sum)
-        return self.softmax(activation)
+        output = self.model(matrix.T)
+        return nn.functional.softmax(output.T, dim=0)
 
-    def log_loss(self, softmax: torch.Tensor) -> torch.Tensor:
-        """Log loss function implemented with CCE, formula:
-            -1 / N * sum(y * log(softmax + epsilon))
-
-        Args:
-            softmax (torch.Tensor): The output of the softmax function
+    def train(self) -> dict[str, torch.Tensor]:
+        """Train function using PyTorch's optimizer
 
         Returns:
-            torch.Tensor: The output of the log loss function
+            dict[str, torch.Tensor]: The state dict of the model
         """
-        epsilon = 1e-15
-        size = self.train_matrix.data.shape[1]
-        log_loss = -1 / size * torch.sum(self.train_matrix.targets * torch.log(softmax + epsilon))
-        return log_loss
-
-    def gradient(self) -> tuple[torch.Tensor, torch.Tensor]:
-        """Gradient function, calculate the gradient of the weights and bias
-
-        Returns:
-            tuple[torch.Tensor, torch.Tensor]: The gradient of the weights and bias
-        """
-        predictions = self.forward_propagation(self.train_matrix.data)
-        loss = self.log_loss(predictions)
-        self.losses.append(loss)
-        size = self.train_matrix.data.shape[1]
-        dw = (
-            1
-            / size
-            * torch.mm(self.train_matrix.data, (predictions.T - self.train_matrix.targets.T))
-        )
-        db = 1 / size * torch.sum(predictions - self.train_matrix.targets)
-        return (dw, db)
-
-    def update(self) -> None:
-        """Update function, update the weights and bias"""
-        dw, db = self.gradient()
-        self.vector_weight -= self.learning_rate * dw.T
-        self.bias -= self.learning_rate * db
-
-    def train(self) -> tuple[torch.Tensor, torch.Tensor]:
-        """Train function, train the model"""
         start = time.time()
+        self.model.train()
         for _ in tqdm(range(self.nb_epoch)):
-            self.update()
+            self.optimizer.zero_grad()
+
+            # Forward pass
+            outputs = self.model(self.train_matrix.data.T)
+            targets = torch.argmax(self.train_matrix.targets, dim=0)
+            loss = self.criterion(outputs, targets)
+            self.losses.append(loss)
+
+            # Backward pass
+            loss.backward()
+            self.optimizer.step()
+
         self.training_time = round(time.time() - start, 3)
-        return self.vector_weight, self.bias
+        print(f"Training time: {self.training_time} seconds")
+        return self.model.state_dict()
 
     def test(self) -> tuple[torch.Tensor, torch.Tensor]:
-        """Test function, test the model and plot the accuracies"""
-        test_predictions = self.forward_propagation(self.test_matrix.data)
-        test_predictions = torch.argmax(test_predictions, dim=0)
-        test_labels = torch.argmax(self.test_matrix.targets, dim=0)
-        accuracy = torch.mean(torch.eq(test_predictions, test_labels).float())
-        print(f"Test Accuracy: {accuracy * 100:.2f}%")
-        failures = torch.where(test_predictions != test_labels)[0]
-        return failures, test_predictions
+        """Test function, test the model and return failures
+
+        Returns:
+            tuple[torch.Tensor, torch.Tensor]: The failures and predictions of the model
+        """
+        self.model.eval()
+        with torch.no_grad():
+            outputs = self.model(self.test_matrix.data.T)
+            _, test_predictions = torch.max(outputs, 1)
+            test_labels = torch.argmax(self.test_matrix.targets, dim=0)
+
+            accuracy = torch.mean((test_predictions == test_labels).float())
+            print(f"Test Accuracy: {accuracy * 100:.2f}%")
+
+            failures = torch.where(test_predictions != test_labels)[0]
+            return failures, test_predictions
 
     def predict(self, image_path: str) -> int:
         """Predict function, predict the class of an image
@@ -125,26 +113,32 @@ class NeuralNetwork:
         Args:
             image_path (str): The path to the image
 
+        Raises:
+            ValueError: If the image is not 28x28 pixels
+
         Returns:
-            int: The prediction
+            int: The predicted class of the image
         """
         image = Image.open(image_path).convert("L")
         image = torchvision.transforms.ToTensor()(image).squeeze().to(self.device)
         if image.shape != (28, 28):
             raise ValueError("The image must be 28x28 pixels")
-        image = image.view(784, 1) / 255
-        prediction = self.forward_propagation(image)
-        return int(torch.argmax(prediction).item())
 
-    def test_and_show_fails(self, number: int) -> None:
-        """Show the failures of the model.
+        image = image.view(1, 784) / 255
+        self.model.eval()
+        with torch.no_grad():
+            output = self.model(image)
+            return int(torch.argmax(output).item())
+
+    def test_and_show_fails(self, number: int = 9) -> None:
+        """Show the failures of the model
 
         Args:
-            number (int): The number of failures to show.
+            number (int): The number of failures to show
         """
         failures, test_predictions = self.test()
         print(f"Number of failures: {len(failures)}")
-        test_labels = torch.argmax(self.test_matrix.targets, dim=1)
+        test_labels = torch.argmax(self.test_matrix.targets, dim=0)
 
         if number > len(failures):
             number = len(failures)
@@ -153,7 +147,7 @@ class NeuralNetwork:
         plt.figure(figsize=(10, 10))  # type: ignore
         for i in range(number):
             index = failures[i]
-            image = self.test_matrix.data[index].reshape(28, 28)
+            image = self.test_matrix.data[:, index].reshape(28, 28).T
             true_label = test_labels[index]
             predicted_label = test_predictions[index]
 
@@ -162,26 +156,52 @@ class NeuralNetwork:
             plt.title(f"True: {true_label}, Pred: {predicted_label}")  # type: ignore
             plt.axis("off")  # type: ignore
 
-        # Adjust layout to remove excess white space
         plt.subplots_adjust(hspace=0.5, wspace=0.5, top=0.9, bottom=0.1, left=0.1, right=0.9)
         plt.show()  # type: ignore
 
     def save(self, path: str) -> None:
-        """Save the model to a file
+        """Save the model to a file using PyTorch's save mechanism
 
         Args:
             path (str): The path to save the model
         """
-        with open(path, "wb") as file:
-            pickle.dump(self, file)
+        state: dict[str, dict[str, Any] | list[Tensor] | float | int] = {
+            "model_state_dict": self.model.state_dict(),
+            "optimizer_state_dict": self.optimizer.state_dict(),
+            "losses": self.losses,
+            "training_time": self.training_time,
+            "nb_epoch": self.nb_epoch,
+            "learning_rate": self.optimizer.param_groups[0]["lr"],
+        }
+        torch.save(state, path)  # type: ignore
+
+    @classmethod
+    def load(cls, path: str, device: torch.device | None = None) -> "NeuralNetwork":
+        """Load a model from a file using PyTorch's load mechanism
+
+        Args:
+            path (str): The path to load the model from
+            device (torch.device, optional):
+                Device to load the model on.
+                If None, uses available device.
+
+        Returns:
+            NeuralNetwork": The loaded model wrapper
+        """
+        if device is None:
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        checkpoint = torch.load(path, map_location=device)  # type: ignore
+        instance = cls(nb_epoch=checkpoint["nb_epoch"], learning_rate=checkpoint["learning_rate"])
+        instance.model.load_state_dict(checkpoint["model_state_dict"])
+        instance.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        instance.losses = checkpoint["losses"]
+        instance.training_time = checkpoint["training_time"]
+        return instance
 
 
 def load_train_mnist(device: torch.device) -> MNIST:
-    """Load the training MNIST dataset
-
-    Returns:
-        MNIST: The training dataset
-    """
+    """Load the training MNIST dataset"""
     train_dataset = torchvision.datasets.MNIST(
         root="data",
         train=True,
@@ -190,21 +210,14 @@ def load_train_mnist(device: torch.device) -> MNIST:
     )
     train_dataset.data = train_dataset.data.view(60000, 784).T.float().to(device) / 255
     train_dataset.targets = (
-        torch.nn.functional.one_hot(  # pylint: disable=E1102
-            train_dataset.targets, num_classes=10
-        )
-        .T.float()
-        .to(device)
+        # pylint: disable-next=not-callable
+        torch.nn.functional.one_hot(train_dataset.targets, num_classes=10).T.float().to(device)
     )
     return train_dataset
 
 
 def load_test_mnist(device: torch.device) -> MNIST:
-    """Load the testing MNIST dataset
-
-    Returns:
-        MNIST: The testing dataset
-    """
+    """Load the testing MNIST dataset"""
     test_dataset = torchvision.datasets.MNIST(
         root="data",
         train=False,
@@ -213,17 +226,13 @@ def load_test_mnist(device: torch.device) -> MNIST:
     )
     test_dataset.data = test_dataset.data.view(10000, 784).T.float().to(device) / 255
     test_dataset.targets = (
-        torch.nn.functional.one_hot(  # pylint: disable=E1102
-            test_dataset.targets, num_classes=10
-        )
-        .T.float()
-        .to(device)
+        # pylint: disable-next=not-callable
+        torch.nn.functional.one_hot(test_dataset.targets, num_classes=10).T.float().to(device)
     )
     return test_dataset
 
 
 if __name__ == "__main__":
-    network = NeuralNetwork()
+    network = NeuralNetwork(nb_epoch=100, learning_rate=1)
     network.train()
-    print(f"Training time: {network.training_time} seconds")
     network.test()
