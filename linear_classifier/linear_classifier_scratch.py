@@ -86,11 +86,12 @@ class NeuralNetwork:
         )
         return log_loss  # type: ignore
 
-    def gradient(self) -> tuple[cp.ndarray[Any, cp.dtype[Any]], Any]:  # type: ignore
+    def gradient(self) -> tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]:  # type: ignore
         """Gradient function, calculate the gradient of the weights and bias
 
         Returns:
-            tuple[cp.ndarray[Any, cp.dtype[Any]], Any]: The gradient of the weights and bias
+            tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]:
+                The gradient of the weights and bias
         """
         predictions = self.forward_propagation(self.train_matrix)
         loss = self.log_loss(predictions)
@@ -106,23 +107,26 @@ class NeuralNetwork:
         self.vector_weight -= self.learning_rate * dw.T  # type: ignore
         self.bias -= self.learning_rate * db  # type: ignore
 
-    def train(self) -> tuple[cp.ndarray[Any, cp.dtype[Any]], Any]:  # type: ignore
+    def train(self) -> tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]:  # type: ignore
         """Train function, train the model
 
         Returns:
-            tuple[cp.ndarray[Any, cp.dtype[Any]], Any]: The weights and bias of the model
+            tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]:
+                The weights and bias of the model
         """
         start = time.time()
         for _ in tqdm(range(self.nb_epoch)):
             self.update()
         self.training_time = round(time.time() - start, 3)
+        print(f"Training time: {self.training_time} seconds")
         return (self.vector_weight, self.bias)  # type: ignore
 
-    def test(self) -> tuple[cp.ndarray[Any, cp.dtype[Any]], Any]:  # type: ignore
+    def test(self) -> tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]:  # type: ignore
         """Test function, test the model and print the accuracy
 
         Returns:
-            tuple[cp.ndarray[Any, cp.dtype[Any]], Any]: The failures and predictions of the model
+            tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]:
+                The failures and predictions of the model
         """
         test_predictions = self.forward_propagation(self.test_matrix)
         test_predictions = cp.argmax(test_predictions, axis=0)  # type: ignore
