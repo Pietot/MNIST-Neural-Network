@@ -227,6 +227,5 @@ def load_test_mnist() -> tuple[Any, Any]:
 
 if __name__ == "__main__":
     network = NeuralNetwork()
-    network.train()  # type: ignore
-    print(f"Training time: {network.training_time} seconds")
-    network.test()  # type: ignore
+    network.train()
+    network.test_and_show_fails()
