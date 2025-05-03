@@ -149,11 +149,11 @@ class NeuralNetwork:
         predictions = self.forward_propagation(image)  # type: ignore
         return cp.argmax(predictions, axis=0)[0]  # type: ignore
 
-    def test_and_show_fails(self, number: int) -> None:
-        """Show the failures of the model.
+    def test_and_show_fails(self, number: int = 9) -> None:
+        """Show the failures of the model
 
         Args:
-            number (int): The number of failures to show.
+            number (int): The number of failures to show
         """
         failures, test_predictions = self.test()  # type: ignore
         print(f"Number of failures: {len(failures)}")  # type: ignore
