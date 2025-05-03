@@ -147,7 +147,7 @@ class NeuralNetwork:
         plt.figure(figsize=(10, 10))  # type: ignore
         for i in range(number):
             index = failures[i]
-            image = self.test_matrix.data[:, index].reshape(28, 28).T
+            image = self.test_matrix.data[:, index].reshape(28, 28).to("cpu")
             true_label = test_labels[index]
             predicted_label = test_predictions[index]
 
