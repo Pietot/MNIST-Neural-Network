@@ -98,10 +98,8 @@ class NeuralNetwork:
             outputs = self.model(self.test_matrix.data.T)
             _, test_predictions = torch.max(outputs, 1)
             test_labels = torch.argmax(self.test_matrix.targets, dim=0)
-
             accuracy = torch.mean((test_predictions == test_labels).float())
             print(f"Test Accuracy: {accuracy * 100:.2f}%")
-
             failures = torch.where(test_predictions != test_labels)[0]
             return failures, test_predictions
 
@@ -157,11 +155,11 @@ class NeuralNetwork:
         plt.subplots_adjust(hspace=0.5, wspace=0.5, top=0.9, bottom=0.1, left=0.1, right=0.9)
         plt.show()  # type: ignore
 
-    def save(self, path: str) -> None:
+    def save(self, filepath: str) -> None:
         """Save the model to a file using PyTorch's save mechanism
 
         Args:
-            path (str): The path to save the model
+            filepath (str): The filepath to save the model (extension .pt)
         """
         state: dict[str, dict[str, Any] | list[Tensor] | float | int] = {
             "model_state_dict": self.model.state_dict(),
@@ -171,7 +169,7 @@ class NeuralNetwork:
             "nb_epoch": self.nb_epoch,
             "learning_rate": self.optimizer.param_groups[0]["lr"],
         }
-        torch.save(state, path)  # type: ignore
+        torch.save(state, filepath)  # type: ignore
 
     @classmethod
     def load(cls, path: str, device: torch.device | None = None) -> "NeuralNetwork":
