@@ -217,13 +217,13 @@ class NeuralNetwork:
         plt.ylabel("Loss")  # type: ignore
         plt.show()  # type: ignore
 
-    def save(self, path: str) -> None:
+    def save(self, filepath: str) -> None:
         """Save the model
 
         Args:
-            path (str): The path to save the model
+            filepath (str): The filepath to save the model (extension .pkl)
         """
-        with open(path, "wb") as file:
+        with open(filepath, "wb") as file:
             pickle.dump(self, file)
 
 
