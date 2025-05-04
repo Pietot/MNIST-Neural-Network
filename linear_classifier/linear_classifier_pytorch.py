@@ -7,7 +7,7 @@ import torch
 import torchvision  # type: ignore
 from matplotlib import pyplot as plt
 from PIL import Image
-from torch import Tensor, nn, optim
+from torch import Tensor, cuda, nn, optim
 from torchvision.datasets.mnist import MNIST  # type: ignore
 from tqdm import tqdm
 
@@ -20,25 +20,23 @@ class LinearClassifier(nn.Module):
         self.fc = nn.Linear(784, 10)
         self.relu = nn.ReLU()
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: Tensor) -> Tensor:
         """Forward pass
 
         Args:
             input_tensor: Input data tensor of shape
 
         Returns:
-            torch.Tensor: Output logits tensor of shape
+            Tensor: Output logits tensor of shape
         """
-        features = self.fc(input_tensor)
-        activated_features = self.relu(features)
-        return activated_features
+        return self.relu(self.fc(input_tensor))
 
 
 class NeuralNetwork:
     """Neural Network class"""
 
     def __init__(self, nb_epoch: int = 100, learning_rate: float | int = 1) -> None:
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if cuda.is_available() else "cpu")
         self.train_matrix = load_train_mnist(self.device)
         self.test_matrix = load_test_mnist(self.device)
 
@@ -49,26 +47,26 @@ class NeuralNetwork:
         self.criterion = nn.CrossEntropyLoss()
 
         self.nb_epoch = nb_epoch
-        self.losses: list[torch.Tensor] = []
+        self.losses: list[Tensor] = []
         self.training_time = 0.0
 
-    def forward_propagation(self, matrix: torch.Tensor) -> torch.Tensor:
+    def forward_propagation(self, matrix: Tensor) -> Tensor:
         """Forward propagation using the PyTorch model
 
         Args:
-            matrix (torch.Tensor): The input matrix
+            matrix (Tensor): The input matrix
 
         Returns:
-            torch.Tensor: The output of the forward propagation
+            Tensor: The output of the forward propagation
         """
         output = self.model(matrix.T)
         return nn.functional.softmax(output.T, dim=0)
 
-    def train(self) -> dict[str, torch.Tensor]:
+    def train(self) -> dict[str, Tensor]:
         """Train function using PyTorch's optimizer
 
         Returns:
-            dict[str, torch.Tensor]: The state dict of the model
+            dict[str, Tensor]: The state dict of the model
         """
         start = time.time()
         self.model.train()
@@ -89,11 +87,11 @@ class NeuralNetwork:
         print(f"Training time: {self.training_time} seconds")
         return self.model.state_dict()
 
-    def test(self) -> tuple[torch.Tensor, torch.Tensor]:
+    def test(self) -> tuple[Tensor, Tensor]:
         """Test function, test the model and return failures
 
         Returns:
-            tuple[torch.Tensor, torch.Tensor]: The failures and predictions of the model
+            tuple[Tensor, Tensor]: The failures and predictions of the model
         """
         self.model.eval()
         with torch.no_grad():
@@ -181,7 +179,7 @@ class NeuralNetwork:
 
         Args:
             path (str): The path to load the model from
-            device (torch.device, optional):
+            device (torch.device):
                 Device to load the model on.
                 If None, uses available device.
 
@@ -189,7 +187,7 @@ class NeuralNetwork:
             NeuralNetwork": The loaded model wrapper
         """
         if device is None:
-            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            device = torch.device("cuda" if cuda.is_available() else "cpu")
 
         checkpoint = torch.load(path, map_location=device)  # type: ignore
         instance = cls(nb_epoch=checkpoint["nb_epoch"], learning_rate=checkpoint["learning_rate"])
@@ -201,7 +199,14 @@ class NeuralNetwork:
 
 
 def load_train_mnist(device: torch.device) -> MNIST:
-    """Load the training MNIST dataset"""
+    """Load the training MNIST dataset
+
+    Args:
+        device (torch.device): The device to load the dataset on
+
+    Returns:
+        MNIST: The training MNIST dataset
+    """
     train_dataset = torchvision.datasets.MNIST(
         root="data",
         train=True,
@@ -217,7 +222,14 @@ def load_train_mnist(device: torch.device) -> MNIST:
 
 
 def load_test_mnist(device: torch.device) -> MNIST:
-    """Load the testing MNIST dataset"""
+    """Load the testing MNIST dataset
+
+    Args:
+        device (torch.device): The device to load the dataset on
+
+    Returns:
+        MNIST: The testing MNIST dataset
+    """
     test_dataset = torchvision.datasets.MNIST(
         root="data",
         train=False,
