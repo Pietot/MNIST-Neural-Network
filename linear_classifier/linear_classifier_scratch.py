@@ -122,7 +122,7 @@ class NeuralNetwork:
         return (self.vector_weight, self.bias)  # type: ignore
 
     def test(self) -> tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]:  # type: ignore
-        """Test function, test the model and print the accuracy
+        """Test function, test the model and return failures
 
         Returns:
             tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]:
@@ -232,4 +232,4 @@ def load_test_mnist() -> tuple[Any, Any]:
 if __name__ == "__main__":
     network = NeuralNetwork()
     network.train()
-    network.test_and_show_fails()
+    network.test()
