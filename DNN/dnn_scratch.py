@@ -158,8 +158,6 @@ class NeuralNetwork:
         test_predictions = cp.argmax(test_predictions, axis=0)  # type: ignore
         test_labels = cp.argmax(self.test_labels, axis=0)  # type: ignore
         accuracy = cp.mean(test_predictions == test_labels)  # type: ignore
-        if accuracy > 0.92:
-            self.save(f".\\dnn_{accuracy:.2f}.pkl")  # type: ignore
         print(f"Test Accuracy: {accuracy * 100:.2f}%")
         failures = cp.where(test_predictions != test_labels)[0]  # type: ignore
         return failures, test_predictions  # type: ignore
