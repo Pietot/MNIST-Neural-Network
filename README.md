@@ -79,7 +79,7 @@ And here's what the loss and precision curves roughly look like for both version
 | Framework | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
 | :-------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
 |  Vanilla  |   ~93%   |     ~50s      |  500   |      0.1      |       26432       |        74        |  GPU   |
-|  Vanilla  |   ~93%   |     ~2.7s     |  500   |      0.1      |       26432       |        74        |  GPU   |
+|  Pytorch  |   ~93%   |     ~2.7s     |  500   |      0.1      |       26432       |        74        |  GPU   |
 
 - Convolutional Neural Network
 
