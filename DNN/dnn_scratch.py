@@ -95,16 +95,16 @@ class DeepNeuralNetwork:
 
     def backward_propagation(
         self, predictions: list[Any]
-    ) -> list[tuple[npt.NDArray[cp.float64], Any]]:
+    ) -> list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]]:
         """Calculate the gradient of of each layer
 
         Args:
             predictions (list[Any]): The output of the forward propagation
 
         Returns:
-            list[tuple[npt.NDArray[cp.float64], Any]]: The gradients of the weights and bias
+            list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]]: The gradients of the weights and bias
         """
-        gradients: list[tuple[npt.NDArray[cp.float64], Any]] = []
+        gradients: list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]] = []
 
         dz = predictions[-1] - self.answer
         size = self.train_matrix.shape[1]
@@ -117,11 +117,13 @@ class DeepNeuralNetwork:
         gradients.reverse()
         return gradients
 
-    def update(self, gradients: list[tuple[npt.NDArray[cp.float64], Any]]) -> None:
+    def update(
+        self, gradients: list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]]
+    ) -> None:
         """Update function, update the weights and bias for each layer
 
         Args:
-            gradients (list[tuple[npt.NDArray[cp.float64], Any]]):
+            gradients (list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]]):
                 The gradients of the weights and bias
         """
         for layer_index, _ in enumerate(self.layers):
@@ -148,11 +150,11 @@ class DeepNeuralNetwork:
         self.show_loss()  # type: ignore
         return self.layers
 
-    def test(self) -> tuple[npt.NDArray[cp.float64], Any]:  # type: ignore
-        """Test function, test the model and print the accuracy
+    def test(self) -> tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]:  # type: ignore
+        """Test function, test the model and return failures
 
         Returns:
-            tuple[npt.NDArray[cp.float64], Any]: The failures and predictions of the model
+            tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]: The failures and predictions of the model
         """
         test_predictions = self.forward_propagation(self.test_matrix)[-1]
         test_predictions = cp.argmax(test_predictions, axis=0)  # type: ignore
