@@ -12,7 +12,7 @@ from PIL import Image
 from tqdm import tqdm
 
 
-class NeuralNetwork:
+class DeepNeuralNetwork:
     """Neural Network class"""
 
     def __init__(self, nb_epoch: int = 500, learning_rate: float | int = 0.1) -> None:
@@ -256,7 +256,7 @@ def load_test_mnist() -> tuple[Any, Any]:
 
 
 if __name__ == "__main__":
-    network = NeuralNetwork()
+    network = DeepNeuralNetwork()
     network.train()  # type: ignore
     print(f"Training time: {network.training_time} seconds")
     network.test()  # type: ignore
