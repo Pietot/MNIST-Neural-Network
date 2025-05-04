@@ -27,14 +27,14 @@ class NeuralNetwork:
 
     def activation(  # type: ignore
         self, weighted_sum: npt.NDArray[cp.float64]
-    ) -> cp.ndarray[Any, cp.dtype[Any]]:  # type: ignore
+    ) -> npt.NDArray[cp.float64]:  # type: ignore
         """Activation function using ReLU, formula: max(0, weighted_sum)
 
         Args:
             weighted_sum (npt.NDArray[cp.float64]): The input to the activation function
 
         Returns:
-            cp.ndarray[Any, cp.dtype[Any]]: The output of the activation function
+            npt.NDArray[cp.float64]: The output of the activation function
         """
         return cp.maximum(0, weighted_sum)  # type: ignore
 

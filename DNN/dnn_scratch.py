@@ -37,7 +37,7 @@ class DeepNeuralNetwork:
             weighted_sum (npt.NDArray[cp.float64]): The input to the activation function
 
         Returns:
-            cp.ndarray[Any, cp.dtype[Any]]: The output of the activation function
+            npt.NDArray[cp.float64]: The output of the activation function
         """
         return cp.maximum(0, weighted_sum)  # type: ignore
 
@@ -148,11 +148,11 @@ class DeepNeuralNetwork:
         self.show_loss()  # type: ignore
         return self.layers
 
-    def test(self) -> tuple[cp.ndarray[Any, cp.dtype[Any]], Any]:  # type: ignore
+    def test(self) -> tuple[npt.NDArray[cp.float64], Any]:  # type: ignore
         """Test function, test the model and print the accuracy
 
         Returns:
-            tuple[cp.ndarray[Any, cp.dtype[Any]], Any]: The failures and predictions of the model
+            tuple[npt.NDArray[cp.float64], Any]: The failures and predictions of the model
         """
         test_predictions = self.forward_propagation(self.test_matrix)[-1]
         test_predictions = cp.argmax(test_predictions, axis=0)  # type: ignore
