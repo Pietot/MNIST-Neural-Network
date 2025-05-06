@@ -102,7 +102,8 @@ class DeepNeuralNetwork:
             predictions (list[Any]): The output of the forward propagation
 
         Returns:
-            list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]]: The gradients of the weights and bias
+            list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]]:
+                The gradients of the weights and bias
         """
         gradients: list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]] = []
 
@@ -147,6 +148,7 @@ class DeepNeuralNetwork:
             gradients = self.backward_propagation(predictions)  # type: ignore
             self.update(gradients)
         self.training_time = round(time.time() - start, 3)
+        print(f"Training time: {self.training_time} seconds")
         self.show_loss()  # type: ignore
         return self.layers
 
@@ -260,5 +262,4 @@ def load_test_mnist() -> tuple[Any, Any]:
 if __name__ == "__main__":
     network = DeepNeuralNetwork()
     network.train()  # type: ignore
-    print(f"Training time: {network.training_time} seconds")
     network.test()  # type: ignore
