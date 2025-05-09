@@ -17,7 +17,7 @@ This repository contains a severals neural network that can recognize handwritte
 
 ### 3. [Convolutional Neural Network](#3---convolutional-neural-network)
 
-### 4. [LeNet](4---LeNet)
+### 4. [LeNet](#4---LeNet)
 
 ### 5. [Performance Comparison](#5---performance-comparison)
 
@@ -62,6 +62,14 @@ And here's what the loss and precision curves roughly look like for both version
 <p align="center">
     <img src="assets/images/loss_vs_epoch_dnn.png" alt="Loss vs Epoch DNN"/>
 </p>
+
+## 3 - Convolutional Network
+
+### In progress...
+
+## 4 - LeNet
+
+### In progress...
 
 ## 5 - Performance Comparison
 
