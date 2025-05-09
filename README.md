@@ -63,7 +63,7 @@ And here's what the loss and precision curves roughly look like for both version
     <img src="assets/images/loss_vs_epoch_dnn.png" alt="Loss vs Epoch DNN"/>
 </p>
 
-## 3 - Convolutional Network
+## 3 - Convolutional Neural Network
 
 ### In progress...
 
