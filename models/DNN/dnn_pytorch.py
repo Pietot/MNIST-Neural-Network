@@ -15,11 +15,12 @@ from tqdm import tqdm
 class DeepNeuralNet(nn.Module):
     """Deep Neural Network class using PyTorch nn.Module with 2 hidden layers"""
 
-    def __init__(self) -> None:
+    def __init__(self, hidden_layers: tuple[int, ...] | list[int] = (32, 32)) -> None:
         super().__init__()  # type: ignore
-        self.fc1 = nn.Linear(784, 32)
-        self.fc2 = nn.Linear(32, 32)
-        self.fc3 = nn.Linear(32, 10)
+        layer_sizes = [784] + list(hidden_layers) + [10]
+        self.fcs = nn.ModuleList(
+            [nn.Linear(layer_sizes[i], layer_sizes[i + 1]) for i in range(len(layer_sizes) - 1)]
+        )
         self.relu = nn.ReLU()
 
     def forward(self, input_tensor: Tensor) -> Tensor:
@@ -31,9 +32,10 @@ class DeepNeuralNet(nn.Module):
         Returns:
             Tensor: Output logits tensor of shape
         """
-        first_hidden = self.relu(self.fc1(input_tensor))
-        second_hidden = self.relu(self.fc2(first_hidden))
-        return self.fc3(second_hidden)
+        x = input_tensor
+        for fc in list(self.fcs)[:-1]:
+            x = self.relu(fc(x))
+        return self.fcs[-1](x)
 
 
 class DeepNeuralNetwork:
@@ -47,12 +49,10 @@ class DeepNeuralNetwork:
         self.model = DeepNeuralNet().to(self.device)
 
         # Initialize weights with He initialization (similar to the CuPy code)
-        nn.init.kaiming_normal_(self.model.fc1.weight)
-        nn.init.zeros_(self.model.fc1.bias)
-        nn.init.kaiming_normal_(self.model.fc2.weight)
-        nn.init.zeros_(self.model.fc2.bias)
-        nn.init.kaiming_normal_(self.model.fc3.weight)
-        nn.init.zeros_(self.model.fc3.bias)
+        for layer in self.model.fcs:
+            if isinstance(layer, nn.Linear):
+                nn.init.kaiming_normal_(layer.weight)
+                nn.init.zeros_(layer.bias)
 
         self.optimizer = optim.SGD(self.model.parameters(), lr=learning_rate)
         self.criterion = nn.CrossEntropyLoss()

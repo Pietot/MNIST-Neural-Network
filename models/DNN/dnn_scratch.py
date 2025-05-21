@@ -15,14 +15,15 @@ from tqdm import tqdm
 class DeepNeuralNetwork:
     """Neural Network class"""
 
-    def __init__(self, nb_epoch: int = 500, learning_rate: float | int = 0.1) -> None:
+    def __init__(
+        self,
+        nb_epoch: int = 500,
+        learning_rate: float | int = 0.1,
+        hidden_layers: tuple[int, ...] | list[int] = (32, 32),
+    ) -> None:
         self.train_matrix, self.answer = load_train_mnist()
         self.test_matrix, self.test_labels = load_test_mnist()
-        self.layers: list[list[npt.NDArray[cp.float64]]] = [
-            [cp.random.randn(784, 32).T * cp.sqrt(2.0 / 784), cp.zeros((32, 1))],  # type: ignore
-            [cp.random.randn(32, 32).T * cp.sqrt(2.0 / 32), cp.zeros((32, 1))],  # type: ignore
-            [cp.random.randn(32, 10).T * cp.sqrt(2.0 / 32), cp.zeros((10, 1))],  # type: ignore
-        ]
+        self.layers: list[list[npt.NDArray[cp.float64]]] = self.get_layers(hidden_layers)
         self.nb_epoch = nb_epoch
         self.learning_rate = learning_rate
         self.losses: list[cp.floating[Any]] = []
@@ -156,7 +157,8 @@ class DeepNeuralNetwork:
         """Test function, test the model and return failures
 
         Returns:
-            tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]: The failures and predictions of the model
+            tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]:
+                The failures and predictions of the model
         """
         test_predictions = self.forward_propagation(self.test_matrix)[-1]
         test_predictions = cp.argmax(test_predictions, axis=0)  # type: ignore
@@ -229,6 +231,29 @@ class DeepNeuralNetwork:
         """
         with open(filepath, "wb") as file:
             pickle.dump(self, file)
+
+    @staticmethod
+    def get_layers(
+        hidden_layers: tuple[int, ...] | list[int],
+    ) -> list[list[npt.NDArray[cp.float64]]]:
+        """Get the layers of the model
+
+        Args:
+            hidden_layers (tuple[int, ...] | list[int]): The number of neurons in each layer
+
+        Returns:
+            list[list[npt.NDArray[cp.float64]]]: The layers of the model
+        """
+        layer_sizes = [784] + list(hidden_layers) + [10]
+        layers: list[list[npt.NDArray[cp.float64]]] = []
+        for i in range(len(layer_sizes) - 1):
+            input_size = layer_sizes[i]
+            output_size = layer_sizes[i + 1]
+            weights = cp.random.randn(output_size, input_size)  # type: ignore
+            weights *= cp.sqrt(2 / input_size)  # type: ignore
+            bias = cp.zeros((output_size, 1))  # type: ignore
+            layers.append([weights, bias])
+        return layers
 
 
 def load_train_mnist() -> tuple[Any, Any]:
