@@ -17,9 +17,9 @@ class DeepNeuralNetwork:
 
     def __init__(
         self,
-        nb_epoch: int = 5,
-        learning_rate: float | int = 0.01,
-        hidden_layers: tuple[int, ...] | list[int] = (32, 32),
+        nb_epoch: int = 10,
+        learning_rate: float = 0.1,
+        hidden_layers: tuple[int, ...] | list[int] = (64, 32),
     ) -> None:
         self.train_matrix, self.answer = load_train_mnist()
         self.test_matrix, self.test_labels = load_test_mnist()
