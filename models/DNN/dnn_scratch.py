@@ -219,7 +219,12 @@ class DeepNeuralNetwork:
 
     def show_loss(self) -> None:
         """Show the loss of the model"""
-        plt.plot(self.losses)  # type: ignore
+        epochs = [
+            index * self.nb_epoch / max(len(self.losses) - 1, 1)
+            for index in range(len(self.losses))
+        ]
+        plt.plot(epochs, self.losses)  # type: ignore
+        plt.locator_params(axis="x", nbins=10)  # type: ignore
         plt.title("Loss")  # type: ignore
         plt.xlabel("Epoch")  # type: ignore
         plt.ylabel("Loss")  # type: ignore
