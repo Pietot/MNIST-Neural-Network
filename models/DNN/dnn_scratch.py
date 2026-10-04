@@ -180,7 +180,7 @@ class DeepNeuralNetwork:
         if image.shape != (28, 28):  # type: ignore
             raise ValueError("The image must be 28x28 pixels")
         image = image.reshape(784, 1) / 255  # type: ignore
-        predictions = self.forward_propagation(image)  # type: ignore
+        predictions = self.forward_propagation(image)[-1]  # type: ignore
         return cp.argmax(predictions, axis=0)[0]  # type: ignore
 
     def test_and_show_fails(self, number: int) -> None:
