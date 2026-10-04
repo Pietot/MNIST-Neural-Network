@@ -17,7 +17,7 @@ class DeepNeuralNetwork:
 
     def __init__(
         self,
-        nb_epoch: int = 10,
+        nb_epoch: int = 5,
         learning_rate: float | int = 0.01,
         hidden_layers: tuple[int, ...] | list[int] = (32, 32),
     ) -> None:
@@ -27,6 +27,7 @@ class DeepNeuralNetwork:
         self.nb_epoch = nb_epoch
         self.learning_rate = learning_rate
         self.losses: list[cp.floating[Any]] = []
+        self.mean_loss: list[cp.floating[Any]] = []
         self.training_time: float = 0.0
 
     def activation(self, weighted_sum: npt.NDArray[cp.float64]) -> npt.NDArray[cp.float64]:
@@ -143,13 +144,16 @@ class DeepNeuralNetwork:
         n = self.train_matrix.shape[1]
         for _ in tqdm(range(self.nb_epoch)):
             perm = cp.random.permutation(n)
+            total_loss = 0.0
             for start in tqdm(range(0, n, batch_size), leave=False):
                 idx = perm[start : start + batch_size]
                 x, y = self.train_matrix[:, idx], self.answer[:, idx]
                 predictions = self.forward_propagation(x)
+                total_loss += float(self.log_loss(predictions[-1], y))  # type: ignore
                 self.losses.append(float(self.log_loss(predictions[-1], y)))  # type: ignore
                 gradients = self.backward_propagation(predictions, y)
                 self.update(gradients)
+            self.mean_loss.append(float(total_loss * batch_size / n))  # type: ignore
         self.training_time = round(time.time() - start_time, 3)
         print(f"Training time: {self.training_time} seconds")
         self.show_loss()
@@ -223,11 +227,19 @@ class DeepNeuralNetwork:
             index * self.nb_epoch / max(len(self.losses) - 1, 1)
             for index in range(len(self.losses))
         ]
-        plt.plot(epochs, self.losses)  # type: ignore
+        plt.plot(epochs, self.losses, label="Loss at each FP")  # type: ignore
+        plt.plot(
+            range(1, len(self.mean_loss) + 1),  # type: ignore
+            self.mean_loss,
+            marker="o",
+            linewidth=3.0,
+            label="Mean Loss at each epoch",
+        )
         plt.locator_params(axis="x", nbins=10)  # type: ignore
         plt.title("Loss")  # type: ignore
         plt.xlabel("Epoch")  # type: ignore
         plt.ylabel("Loss")  # type: ignore
+        plt.legend(loc="upper right")
         plt.show()  # type: ignore
 
     def save(self, filepath: str) -> None:
