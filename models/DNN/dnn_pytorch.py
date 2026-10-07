@@ -43,7 +43,7 @@ class DeepNeuralNetwork:
     """Deep Neural Network class wrapper"""
 
     def __init__(
-        self, nb_epoch: int = 10, learning_rate: float = 0.1, batch_size: int = 64
+        self, nb_epoch: int = 5, learning_rate: float = 0.1, batch_size: int = 32
     ) -> None:
         self.device = torch.device("cuda" if cuda.is_available() else "cpu")
         self.train_matrix = load_train_mnist(self.device)
