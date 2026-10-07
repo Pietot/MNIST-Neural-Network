@@ -48,7 +48,7 @@ Here is the architecture of the network:
 ![DNN Architecture](assets/svg/dnn_architecture.svg)
 
 > [!NOTE]
-> Layers (including input and output layers): 784-32-32-10 neurons.
+> Layers (including input and output layers): 784-64-32-10 neurons.
 
 And here's what the loss and precision curves roughly look like for both versions of the network:
 
