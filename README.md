@@ -56,37 +56,13 @@ And here's what the loss and precision curves roughly look like for both version
 
 ## 5 - Performance Comparison
 
-### Here are tables comparing the performance of the different frameworks depending on the neural network used
+### Here are tables comparing the performance of the different models
 
-- Linear Classifier
-
-| Framework | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
-| :-------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-|  Vanilla  |   ~88%   |     ~4.7s     |  100   |       1       |       7840        |        10        |  GPU   |
-|  Pytorch  |   ~88%   |     ~0.3s     |  100   |       1       |       7840        |        10        |  GPU   |
-
-- Deep Neural Network
-
-| Framework | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
-| :-------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-|  Vanilla  |   ~97%   |     ~27s      |   10   |      0.1      |       52544       |       106        |  GPU   |
-|  Pytorch  |   ~97%   |     ~27s      |   10   |      0.1      |       52544       |       106        |  GPU   |
-
-### Here are tables comparing the performance of the different neural networks depending on the framework used
-
-- Neural Network built from scratch using only **CuPy**
-
-|     Framework     | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
-| :---------------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-| Linear Classifier |   ~88%   |     ~4.7s     |  100   |       1       |       7840        |        10        |  GPU   |
-|        DNN        |   ~97%   |     ~27s      |   10   |      0.1      |       52544       |       106        |  GPU   |
-
-- Neural Network built with **PyTorch**
-
-|  Neural Network   | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
-| :---------------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-| Linear Classifier |   ~88%   |     ~0.3s     |  100   |       1       |       7840        |        10        |  GPU   |
-|        DNN        |   ~97%   |     ~27s      |   10   |      0.1      |       52544       |       106        |  GPU   |
+|     Framework     | Hidden Layers | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
+| :---------------: | :-----------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
+| Linear Classifier |     None      |   ~88%   |     ~4.7s     |  100   |       1       |       7840        |        10        |  GPU   |
+|        DNN        |     32-32     |   ~93%   |     ~43s      |  500   |      0.1      |                   |                  |  GPU   |
+|   + mini-batch    |     32-32     |   ~96%   |     ~14s      |   5    |      0.1      |       52544       |       106        |  GPU   |
 
 > [!NOTE]
 > These values can change depending on the version of Python and your PC
