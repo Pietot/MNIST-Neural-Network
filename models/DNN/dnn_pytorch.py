@@ -1,13 +1,14 @@
 """Deep Neural Network (DNN) built with PyTorch with 2 hidden layers with 32 neurons each"""
 
 import time
-from typing import Any, List
+from typing import Any
 
 import torch
 import torchvision  # type: ignore
 from matplotlib import pyplot as plt
 from PIL import Image
 from torch import Tensor, cuda, nn, optim
+from torch.utils.data import DataLoader, TensorDataset
 from torchvision.datasets.mnist import MNIST  # type: ignore
 from tqdm import tqdm
 
@@ -15,7 +16,7 @@ from tqdm import tqdm
 class DeepNeuralNet(nn.Module):
     """Deep Neural Network class using PyTorch nn.Module with 2 hidden layers"""
 
-    def __init__(self, hidden_layers: tuple[int, ...] | list[int] = (32, 32)) -> None:
+    def __init__(self, hidden_layers: tuple[int, ...] | list[int] = (64, 32)) -> None:
         super().__init__()  # type: ignore
         layer_sizes = [784] + list(hidden_layers) + [10]
         self.fcs = nn.ModuleList(
@@ -41,10 +42,21 @@ class DeepNeuralNet(nn.Module):
 class DeepNeuralNetwork:
     """Deep Neural Network class wrapper"""
 
-    def __init__(self, nb_epoch: int = 500, learning_rate: float | int = 0.1) -> None:
+    def __init__(
+        self, nb_epoch: int = 5, learning_rate: float = 0.1, batch_size: int = 32
+    ) -> None:
         self.device = torch.device("cuda" if cuda.is_available() else "cpu")
         self.train_matrix = load_train_mnist(self.device)
         self.test_matrix = load_test_mnist(self.device)
+        self.batch_size = batch_size
+        self.train_loader = DataLoader(
+            TensorDataset(
+                self.train_matrix.data.T,
+                torch.argmax(self.train_matrix.targets, dim=0),
+            ),
+            batch_size=batch_size,
+            shuffle=True,
+        )
 
         self.model = DeepNeuralNet().to(self.device)
 
@@ -58,7 +70,7 @@ class DeepNeuralNetwork:
         self.criterion = nn.CrossEntropyLoss()
 
         self.nb_epoch = nb_epoch
-        self.losses: List[torch.Tensor] = []
+        self.losses: list[torch.Tensor] = []
         self.training_time = 0.0
 
     def forward_propagation(self, matrix: torch.Tensor) -> torch.Tensor:
@@ -82,17 +94,18 @@ class DeepNeuralNetwork:
         start = time.time()
         self.model.train()
         for _ in tqdm(range(self.nb_epoch)):
-            self.optimizer.zero_grad()
+            epoch_loss = 0.0
+            for inputs, targets in tqdm(self.train_loader, leave=False):
+                self.optimizer.zero_grad()
+                outputs = self.model(inputs)
+                loss = self.criterion(outputs, targets)
+                loss.backward()
+                self.optimizer.step()
+                epoch_loss += loss.item() * inputs.size(0)
 
-            # Forward pass
-            outputs = self.model(self.train_matrix.data.T)
-            targets = torch.argmax(self.train_matrix.targets, dim=0)
-            loss = self.criterion(outputs, targets)
-            self.losses.append(loss.detach().clone())
-
-            # Backward pass
-            loss.backward()
-            self.optimizer.step()
+            self.losses.append(
+                torch.tensor(epoch_loss / len(self.train_loader.dataset), device=self.device)  # type: ignore
+            )
 
         self.training_time = round(time.time() - start, 3)
         print(f"Training time: {self.training_time} seconds")
@@ -187,6 +200,7 @@ class DeepNeuralNetwork:
             "losses": self.losses,
             "training_time": self.training_time,
             "nb_epoch": self.nb_epoch,
+            "batch_size": self.batch_size,
             "learning_rate": self.optimizer.param_groups[0]["lr"],
         }
         torch.save(state, filepath)  # type: ignore
@@ -208,7 +222,11 @@ class DeepNeuralNetwork:
             device = torch.device("cuda" if cuda.is_available() else "cpu")
 
         checkpoint = torch.load(path, map_location=device)  # type: ignore
-        instance = cls(nb_epoch=checkpoint["nb_epoch"], learning_rate=checkpoint["learning_rate"])
+        instance = cls(
+            nb_epoch=checkpoint["nb_epoch"],
+            learning_rate=checkpoint["learning_rate"],
+            batch_size=checkpoint.get("batch_size", 64),
+        )
         instance.model.load_state_dict(checkpoint["model_state_dict"])
         instance.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
         instance.losses = checkpoint["losses"]
@@ -263,6 +281,6 @@ def load_test_mnist(device: torch.device) -> MNIST:
 
 
 if __name__ == "__main__":
-    network = DeepNeuralNetwork(nb_epoch=500, learning_rate=0.1)
+    network = DeepNeuralNetwork()
     network.train()
     network.test()

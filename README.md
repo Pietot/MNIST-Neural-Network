@@ -5,8 +5,11 @@
 
 This repository contains a severals neural network that can recognize handwritten digits from the MNIST dataset. Neural networks are either made from scratch using only the **CuPy** library, either build with the frameworks **PyTorch**.
 
-> **Note**: The MNIST dataset is a dataset of 60,000 small square 28x28 pixel grayscale images of handwritten single digits between 0 and 9. The dataset also includes a test set of 10,000 images.<br><br>
-> CuPy is an open-source array library accelerated with NVIDIA CUDA. It allows you to perform operations on a GPU. It is a drop-in replacement for NumPy.<br><br>
+> [!NOTE]
+> The MNIST dataset is a dataset of 60,000 small square 28x28 pixel grayscale images of handwritten single digits between 0 and 9. The dataset also includes a test set of 10,000 images.
+>
+> CuPy is an open-source array library accelerated with NVIDIA CUDA. It allows you to perform operations on a GPU. It is a drop-in replacement for NumPy.
+>
 > TensorFlow was not used in this project because I couldn't find a way to make it work with my GPU.
 
 ## Summary
@@ -25,18 +28,14 @@ The activation function used in this network is the ReLU function. The network w
 
 Here is the architecture of the network:
 
-<p align="center">
-    <img src="assets/svg/linear_classifier_architecture.svg" alt="Linear classifier architecture" style="width: 50%;"/>
-</p>
+![Linear classifier architecture](assets/svg/linear_classifier_architecture.svg)
 
-> **Note**: Input layer: 784 neurons. Output layer: 10 neurons.
+> [!NOTE]
+> Input layer: 784 neurons. Output layer: 10 neurons.
 
 And here's what the loss and precision curves roughly look like for both versions of the network:
 
-<br>
-<p align="center">
-    <img src="assets/images/loss_vs_epoch_linear_classifier.png" alt="Loss vs Epoch Linear Classifier"/>
-</p>
+![Loss vs Epoch Linear Classifier](assets/images/loss_vs_epoch_linear_classifier.png)
 
 ## 2 - Deep Neural Network
 
@@ -46,54 +45,26 @@ The activation function and the training algorithm used in this network are the 
 
 Here is the architecture of the network:
 
-<p align="center">
-    <img src="assets/svg/dnn_architecture.svg" alt="DNN Architecture"/>
-</p>
+![DNN Architecture](assets/svg/dnn_architecture.svg)
 
-> **Note**: Layers (including input and output layers): 784-32-32-10 neurons.
+> [!NOTE]
+> Layers (including input and output layers): 784-64-32-10 neurons.
 
 And here's what the loss and precision curves roughly look like for both versions of the network:
 
-<br>
-<p align="center">
-    <img src="assets/images/loss_vs_epoch_dnn.png" alt="Loss vs Epoch DNN"/>
-</p>
+![Loss vs Epoch DNN](assets/images/loss_vs_epoch_dnn.png)
 
 ## 5 - Performance Comparison
 
-### Here are tables comparing the performance of the different frameworks depending on the neural network used:
+### Here are tables comparing the performance of the different models
 
-- Linear Classifier
+|     Framework     | Hidden Layers | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
+| :---------------: | :-----------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
+| Linear Classifier |     None      |   ~88%   |     ~4.7s     |  100   |       1       |       7840        |        10        |  GPU   |
+|        DNN        |     32-32     |   ~93%   |     ~43s      |  500   |      0.1      |       26432       |        74        |  GPU   |
+|   + mini-batch    |     32-32     |   ~96%   |     ~14s      |   5    |      0.1      |       26432       |        74        |  GPU   |
 
-| Framework | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
-| :-------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-|  Vanilla  |   ~88%   |     ~4.7s     |  100   |       1       |       7840        |        10        |  GPU   |
-|  Pytorch  |   ~88%   |     ~0.3s     |  100   |       1       |       7840        |        10        |  GPU   |
-
-- Deep Neural Network
-
-| Framework | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
-| :-------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-|  Vanilla  |   ~93%   |     ~50s      |  500   |      0.1      |       26432       |        74        |  GPU   |
-|  Pytorch  |   ~93%   |     ~2.7s     |  500   |      0.1      |       26432       |        74        |  GPU   |
-
-- Convolutional Neural Network
-
-### Here are tables comparing the performance of the different neural networks depending on the framework used:
-
-- Neural Network built from scratch using only **CuPy**
-
-|     Framework     | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
-| :---------------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-| Linear Classifier |   ~88%   |     ~4.7s     |  100   |       1       |       7840        |        10        |  GPU   |
-|        DNN        |   ~93%   |     ~50s      |  500   |      0.1      |       26432       |        74        |  GPU   |
-
-- Neural Network built with **PyTorch**
-
-|  Neural Network   | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
-| :---------------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-| Linear Classifier |   ~88%   |     ~0.3s     |  100   |       1       |       7840        |        10        |  GPU   |
-|        DNN        |   ~93%   |     ~2.7s     |  500   |      0.1      |       26432       |        74        |  GPU   |
-
-> **Note**: These values can change depending on the version of Python and your PC<br><br>
+> [!NOTE]
+> These values can change depending on the version of Python and your PC
+>
 > For these benchmarks, I used Python 3.12.4 64-bit implemented with CPython on a Ryzen 5 3600, rtx 2060 with 2\*8GB of RAM clocked at 3600Hz on Windows 10.

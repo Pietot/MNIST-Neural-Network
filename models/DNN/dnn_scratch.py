@@ -17,8 +17,8 @@ class DeepNeuralNetwork:
 
     def __init__(
         self,
-        nb_epoch: int = 500,
-        learning_rate: float | int = 0.1,
+        nb_epoch: int = 5,
+        learning_rate: float = 0.1,
         hidden_layers: tuple[int, ...] | list[int] = (32, 32),
     ) -> None:
         self.train_matrix, self.answer = load_train_mnist()
@@ -27,6 +27,7 @@ class DeepNeuralNetwork:
         self.nb_epoch = nb_epoch
         self.learning_rate = learning_rate
         self.losses: list[cp.floating[Any]] = []
+        self.mean_loss: list[cp.floating[Any]] = []
         self.training_time: float = 0.0
 
     def activation(self, weighted_sum: npt.NDArray[cp.float64]) -> npt.NDArray[cp.float64]:
@@ -71,34 +72,33 @@ class DeepNeuralNetwork:
                 activations.append(self.activation(weighted_sum))
         return activations  # type: ignore
 
-    def log_loss(self, softmax: npt.NDArray[cp.float64]) -> cp.floating[Any]:
+    def log_loss(
+        self, softmax: npt.NDArray[cp.float64], answer: npt.NDArray[cp.float64]
+    ) -> cp.floating[Any]:
         """Log loss function implemented with CCE, formula:
             -1 / N * sum(y * log(softmax + epsilon))
 
         Args:
             softmax (npt.NDArray[cp.float64]): The output of the softmax function
-
+            answer (npt.NDArray[cp.float64]): The correct labels of the training data
         Returns:
             cp.floating[Any]: The log loss
         """
         epsilon = 1e-15
-        size = self.train_matrix.shape[1]
-        log_loss = (  # type: ignore
-            -1
-            / size
-            * cp.sum(  # type: ignore
-                self.answer * cp.log(softmax + epsilon)  # type: ignore
-            )
-        )
+        size = answer.shape[1]
+        log_loss = -1 / size * cp.sum(answer * cp.log(softmax + epsilon))
         return log_loss  # type: ignore
 
     def backward_propagation(
-        self, predictions: list[Any]
+        self,
+        predictions: npt.NDArray[cp.float64],
+        answer: npt.NDArray[cp.float64],
     ) -> list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]]:
         """Calculate the gradient of of each layer
 
         Args:
-            predictions (list[Any]): The output of the forward propagation
+            predictions (npt.NDArray[cp.float64]): The output of the forward propagation
+            answer (npt.NDArray[cp.float64]): The correct labels of the training data
 
         Returns:
             list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]]:
@@ -106,8 +106,8 @@ class DeepNeuralNetwork:
         """
         gradients: list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]] = []
 
-        dz = predictions[-1] - self.answer
-        size = self.train_matrix.shape[1]
+        dz = predictions[-1] - answer
+        size = answer.shape[1]
         for layer_index in reversed(range(len(self.layers))):
             dw = 1 / size * dz.dot(predictions[layer_index].T)
             db = 1 / size * cp.sum(dz, axis=1, keepdims=True)  # type: ignore
@@ -134,19 +134,27 @@ class DeepNeuralNetwork:
                 self.layers[layer_index][1] - self.learning_rate * gradients[layer_index][1]
             )
 
-    def train(self) -> list[list[npt.NDArray[cp.float64]]]:
+    def train(self, batch_size: int = 64) -> list[list[npt.NDArray[cp.float64]]]:
         """Train function, train the model
 
         Returns:
             list[list[npt.NDArray[cp.float64]]]: The layers of the model
         """
-        start = time.time()
+        start_time = time.time()
+        n = self.train_matrix.shape[1]
         for _ in tqdm(range(self.nb_epoch)):
-            predictions = self.forward_propagation(self.train_matrix)
-            self.losses.append(float(self.log_loss(predictions[-1])))  # type: ignore
-            gradients = self.backward_propagation(predictions)  # type: ignore
-            self.update(gradients)
-        self.training_time = round(time.time() - start, 3)
+            perm = cp.random.permutation(n)
+            total_loss = 0.0
+            for start in tqdm(range(0, n, batch_size), leave=False):
+                idx = perm[start : start + batch_size]
+                x, y = self.train_matrix[:, idx], self.answer[:, idx]
+                predictions = self.forward_propagation(x)
+                total_loss += float(self.log_loss(predictions[-1], y))  # type: ignore
+                self.losses.append(float(self.log_loss(predictions[-1], y)))  # type: ignore
+                gradients = self.backward_propagation(predictions, y)
+                self.update(gradients)
+            self.mean_loss.append(float(total_loss * batch_size / n))  # type: ignore
+        self.training_time = round(time.time() - start_time, 3)
         print(f"Training time: {self.training_time} seconds")
         self.show_loss()
         return self.layers
@@ -180,7 +188,7 @@ class DeepNeuralNetwork:
         if image.shape != (28, 28):  # type: ignore
             raise ValueError("The image must be 28x28 pixels")
         image = image.reshape(784, 1) / 255  # type: ignore
-        predictions = self.forward_propagation(image)  # type: ignore
+        predictions = self.forward_propagation(image)[-1]  # type: ignore
         return cp.argmax(predictions, axis=0)[0]  # type: ignore
 
     def test_and_show_fails(self, number: int) -> None:
@@ -215,10 +223,23 @@ class DeepNeuralNetwork:
 
     def show_loss(self) -> None:
         """Show the loss of the model"""
-        plt.plot(self.losses)  # type: ignore
+        epochs = [
+            index * self.nb_epoch / max(len(self.losses) - 1, 1)
+            for index in range(len(self.losses))
+        ]
+        plt.plot(epochs, self.losses, label="Loss at each FP")  # type: ignore
+        plt.plot(
+            range(1, len(self.mean_loss) + 1),  # type: ignore
+            self.mean_loss,
+            marker="o",
+            linewidth=3.0,
+            label="Mean Loss at each epoch",
+        )
+        plt.locator_params(axis="x", nbins=10)  # type: ignore
         plt.title("Loss")  # type: ignore
         plt.xlabel("Epoch")  # type: ignore
         plt.ylabel("Loss")  # type: ignore
+        plt.legend(loc="upper right")
         plt.show()  # type: ignore
 
     def save(self, filepath: str) -> None:
