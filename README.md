@@ -60,10 +60,12 @@ And here's what the loss and precision curves roughly look like for both version
 
 |      Framework      | Hidden Layers | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
 | :-----------------: | :-----------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-|  Linear Classifier  |     None      |   ~88%   |     ~4.7s     |  100   |       1       |       7840        |        10        |  GPU   |
-|         DNN         |     32-32     |   ~60%   |     ~40s      |  500   |      0.1      |       26432       |        74        |  GPU   |
-| + He initialization |     32-32     |   ~93%   |     ~40s      |  500   |      0.1      |       26432       |        74        |  GPU   |
-|    + mini-batch     |     32-32     |   ~96%   |     ~14s      |   5    |      0.1      |       26432       |        74        |  GPU   |
+|  Linear Classifier  |     None      |   ~88%   |     ~4.7s     |  100   |       1       |       7 840       |        10        |  GPU   |
+|         DNN         |     32-32     |   ~60%   |     ~40s      |  500   |      0.1      |      26 432       |        74        |  GPU   |
+| + He initialization |     32-32     |   ~93%   |     ~40s      |  500   |      0.1      |      26 432       |        74        |  GPU   |
+|    + mini-batch     |     32-32     |   ~96%   |     ~14s      |   5    |      0.1      |      26 432       |        74        |  GPU   |
+|                     |    256-256    |   ~97%   |     ~28s      |   10   |     0.03      |      254 464      |       522        |  GPU   |
+|     + momentum      |    256-256    |   ~98%   |     ~35s      |   10   |     0.03      |      254 464      |       522        |  GPU   |
 
 > [!NOTE]
 > These values can change depending on the version of Python and your PC

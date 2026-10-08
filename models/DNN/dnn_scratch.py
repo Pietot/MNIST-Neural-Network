@@ -1,4 +1,4 @@
-"""Deep Neural Network (DNN) built from scratch implemented with mini-batch SGD"""
+"""Deep Neural Network (DNN) built from scratch implemented with mini-batch momentum SGD"""
 
 import pickle
 import time
@@ -17,15 +17,23 @@ class DeepNeuralNetwork:
 
     def __init__(
         self,
-        nb_epoch: int = 5,
-        learning_rate: float = 0.1,
-        hidden_layers: tuple[int, ...] | list[int] = (32, 32),
+        nb_epoch: int = 10,
+        learning_rate: float = 0.03,
+        beta=0.9,
+        hidden_layers: tuple[int, ...] | list[int] = (256, 256),
     ) -> None:
         self.train_matrix, self.answer = load_train_mnist()
         self.test_matrix, self.test_labels = load_test_mnist()
         self.layers: list[list[npt.NDArray[cp.float64]]] = self.get_layers(hidden_layers)
         self.nb_epoch = nb_epoch
         self.learning_rate = learning_rate
+        self.beta = beta
+        self.velocity_weights: list[npt.NDArray[cp.float64]] = [
+            cp.zeros_like(weights) for weights, _ in self.layers
+        ]
+        self.velocity_biases: list[npt.NDArray[cp.float64]] = [
+            cp.zeros_like(bias) for _, bias in self.layers
+        ]
         self.losses: list[cp.floating[Any]] = []
         self.mean_loss: list[cp.floating[Any]] = []
         self.training_time: float = 0.0
@@ -126,13 +134,16 @@ class DeepNeuralNetwork:
             gradients (list[tuple[npt.NDArray[cp.float64], npt.NDArray[cp.float64]]]):
                 The gradients of the weights and bias
         """
-        for layer_index, _ in enumerate(self.layers):
-            self.layers[layer_index][0] = (
-                self.layers[layer_index][0] - self.learning_rate * gradients[layer_index][0]
+        for layer_index, (weight_grad, bias_grad) in enumerate(gradients):
+            self.velocity_weights[layer_index] = (
+                self.beta * self.velocity_weights[layer_index] + weight_grad
             )
-            self.layers[layer_index][1] = (
-                self.layers[layer_index][1] - self.learning_rate * gradients[layer_index][1]
+            self.velocity_biases[layer_index] = (
+                self.beta * self.velocity_biases[layer_index] + bias_grad
             )
+
+            self.layers[layer_index][0] -= self.learning_rate * self.velocity_weights[layer_index]
+            self.layers[layer_index][1] -= self.learning_rate * self.velocity_biases[layer_index]
 
     def train(self, batch_size: int = 64) -> list[list[npt.NDArray[cp.float64]]]:
         """Train function, train the model
@@ -171,6 +182,11 @@ class DeepNeuralNetwork:
         test_labels = cp.argmax(self.test_labels, axis=0)  # type: ignore
         accuracy = cp.mean(test_predictions == test_labels)  # type: ignore
         print(f"Test Accuracy: {accuracy * 100:.2f}%")
+        train_predictions = self.forward_propagation(self.train_matrix)[-1]
+        train_predictions = cp.argmax(train_predictions, axis=0)  # type: ignore
+        train_labels = cp.argmax(self.answer, axis=0)  # type: ignore
+        train_accuracy = cp.mean(train_predictions == train_labels)  # type: ignore
+        print(f"Train Accuracy: {train_accuracy * 100:.2f}%")
         failures = cp.where(test_predictions != test_labels)[0]  # type: ignore
         return failures, test_predictions  # type: ignore
 

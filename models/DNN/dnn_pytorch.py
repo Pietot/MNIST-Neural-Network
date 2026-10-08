@@ -1,4 +1,4 @@
-"""Deep Neural Network (DNN) built with PyTorch implemented with mini-batch SGD"""
+"""Deep Neural Network (DNN) built with PyTorch implemented with mini-batch momentum SGD"""
 
 import time
 from typing import Any
@@ -16,7 +16,7 @@ from tqdm import tqdm
 class DeepNeuralNet(nn.Module):
     """Deep Neural Network class using PyTorch nn.Module with 2 hidden layers"""
 
-    def __init__(self, hidden_layers: tuple[int, ...] | list[int] = (64, 32)) -> None:
+    def __init__(self, hidden_layers: tuple[int, ...] | list[int] = (256, 256)) -> None:
         super().__init__()  # type: ignore
         layer_sizes = [784] + list(hidden_layers) + [10]
         self.fcs = nn.ModuleList(
@@ -43,7 +43,7 @@ class DeepNeuralNetwork:
     """Deep Neural Network class wrapper"""
 
     def __init__(
-        self, nb_epoch: int = 5, learning_rate: float = 0.1, batch_size: int = 32
+        self, nb_epoch: int = 10, learning_rate: float = 0.03, batch_size: int = 64
     ) -> None:
         self.device = torch.device("cuda" if cuda.is_available() else "cpu")
         self.train_matrix = load_train_mnist(self.device)
@@ -66,7 +66,7 @@ class DeepNeuralNetwork:
                 nn.init.kaiming_normal_(layer.weight)
                 nn.init.zeros_(layer.bias)
 
-        self.optimizer = optim.SGD(self.model.parameters(), lr=learning_rate)
+        self.optimizer = optim.SGD(self.model.parameters(), lr=learning_rate, momentum=0.9)
         self.criterion = nn.CrossEntropyLoss()
 
         self.nb_epoch = nb_epoch
