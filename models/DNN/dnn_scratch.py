@@ -1,4 +1,4 @@
-"""Deep Neural Network (DNN) built from scratch with 2 hidden layers with 32 neurons each"""
+"""Deep Neural Network (DNN) built from scratch implemented with mini-batch SGD"""
 
 import pickle
 import time

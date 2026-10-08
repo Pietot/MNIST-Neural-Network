@@ -1,4 +1,4 @@
-"""Deep Neural Network (DNN) built with PyTorch with 2 hidden layers with 32 neurons each"""
+"""Deep Neural Network (DNN) built with PyTorch implemented with mini-batch SGD"""
 
 import time
 from typing import Any

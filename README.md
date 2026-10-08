@@ -39,16 +39,16 @@ And here's what the loss and precision curves roughly look like for both version
 
 ## 2 - Deep Neural Network
 
-For this second neural network, we will add 3 hidden layers to the previous architecture. The input layer will still have 784 neurons, and the output layer will still have 10 neurons.
+For this second neural network, we will add 2 hidden layers to the previous architecture. The input layer will still have 784 neurons, and the output layer will still have 10 neurons.
 
-The activation function and the training algorithm used in this network are the same as in the previous one. The only other notable difference is that the initialization of the weights is done using the He method. This method is used to initialize the weights of the network in order to avoid the vanishing gradient problem.
+The activation function and the training algorithm used in this network are the same as in the previous one.
 
 Here is the architecture of the network:
 
 ![DNN Architecture](assets/svg/dnn_architecture.svg)
 
 > [!NOTE]
-> Layers (including input and output layers): 784-64-32-10 neurons.
+> Layers (including input and output layers): 784-32-32-10 neurons.
 
 And here's what the loss and precision curves roughly look like for both versions of the network:
 
@@ -58,11 +58,12 @@ And here's what the loss and precision curves roughly look like for both version
 
 ### Here are tables comparing the performance of the different models
 
-|     Framework     | Hidden Layers | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
-| :---------------: | :-----------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-| Linear Classifier |     None      |   ~88%   |     ~4.7s     |  100   |       1       |       7840        |        10        |  GPU   |
-|        DNN        |     32-32     |   ~93%   |     ~43s      |  500   |      0.1      |       26432       |        74        |  GPU   |
-|   + mini-batch    |     32-32     |   ~96%   |     ~14s      |   5    |      0.1      |       26432       |        74        |  GPU   |
+|      Framework      | Hidden Layers | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
+| :-----------------: | :-----------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
+|  Linear Classifier  |     None      |   ~88%   |     ~4.7s     |  100   |       1       |       7840        |        10        |  GPU   |
+|         DNN         |     32-32     |   ~60%   |     ~40s      |  500   |      0.1      |       26432       |        74        |  GPU   |
+| + He initialization |     32-32     |   ~93%   |     ~40s      |  500   |      0.1      |       26432       |        74        |  GPU   |
+|    + mini-batch     |     32-32     |   ~96%   |     ~14s      |   5    |      0.1      |       26432       |        74        |  GPU   |
 
 > [!NOTE]
 > These values can change depending on the version of Python and your PC
