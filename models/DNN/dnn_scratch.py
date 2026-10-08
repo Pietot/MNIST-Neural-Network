@@ -160,8 +160,9 @@ class DeepNeuralNetwork:
                 idx = perm[start : start + batch_size]
                 x, y = self.train_matrix[:, idx], self.answer[:, idx]
                 predictions = self.forward_propagation(x)
-                total_loss += float(self.log_loss(predictions[-1], y))  # type: ignore
-                self.losses.append(float(self.log_loss(predictions[-1], y)))  # type: ignore
+                log_loss = self.log_loss(predictions[-1], y)
+                total_loss += float(log_loss)  # type: ignore
+                self.losses.append(float(log_loss))  # type: ignore
                 gradients = self.backward_propagation(predictions, y)
                 self.update(gradients)
             self.mean_loss.append(float(total_loss * batch_size / n))  # type: ignore
