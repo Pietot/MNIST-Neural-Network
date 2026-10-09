@@ -1,11 +1,14 @@
-"""Deep Neural Network (DNN) built from scratch implemented with mini-batch momentum SGD"""
+"""Deep Neural Network (DNN) built from scratch implemented with mini-batch momentum SGD and hyperparameter optimization using Optuna."""
 
-import pickle
+import json
+import struct
 import time
 from typing import Any
 
 import cupy as cp  # type: ignore
 import keras  # type: ignore
+import numpy as np
+import optuna
 from matplotlib import pyplot as plt
 from numpy import typing as npt
 from PIL import Image
@@ -19,14 +22,16 @@ class DeepNeuralNetwork:
         self,
         nb_epoch: int = 10,
         learning_rate: float = 0.03,
+        batch_size: int = 64,
         beta=0.9,
         hidden_layers: tuple[int, ...] | list[int] = (256, 256),
     ) -> None:
-        self.train_matrix, self.answer = load_train_mnist()
-        self.test_matrix, self.test_labels = load_test_mnist()
+        self.train_matrix, self.answer = train_matrix, answer
+        self.test_matrix, self.test_labels = test_matrix, test_labels
         self.layers: list[list[npt.NDArray[cp.float64]]] = self.get_layers(hidden_layers)
         self.nb_epoch = nb_epoch
         self.learning_rate = learning_rate
+        self.batch_size = batch_size
         self.beta = beta
         self.velocity_weights: list[npt.NDArray[cp.float64]] = [
             cp.zeros_like(weights) for weights, _ in self.layers
@@ -145,7 +150,7 @@ class DeepNeuralNetwork:
             self.layers[layer_index][0] -= self.learning_rate * self.velocity_weights[layer_index]
             self.layers[layer_index][1] -= self.learning_rate * self.velocity_biases[layer_index]
 
-    def train(self, batch_size: int = 64) -> list[list[npt.NDArray[cp.float64]]]:
+    def train(self, trial: optuna.Trial | None = None) -> list[list[npt.NDArray[cp.float64]]]:
         """Train function, train the model
 
         Returns:
@@ -153,11 +158,11 @@ class DeepNeuralNetwork:
         """
         start_time = time.time()
         n = self.train_matrix.shape[1]
-        for _ in tqdm(range(self.nb_epoch)):
+        for epoch in tqdm(range(self.nb_epoch)):
             perm = cp.random.permutation(n)
             total_loss = 0.0
-            for start in tqdm(range(0, n, batch_size), leave=False):
-                idx = perm[start : start + batch_size]
+            for start in tqdm(range(0, n, self.batch_size), leave=False):
+                idx = perm[start : start + self.batch_size]
                 x, y = self.train_matrix[:, idx], self.answer[:, idx]
                 predictions = self.forward_propagation(x)
                 log_loss = self.log_loss(predictions[-1], y)
@@ -165,7 +170,12 @@ class DeepNeuralNetwork:
                 self.losses.append(float(log_loss))  # type: ignore
                 gradients = self.backward_propagation(predictions, y)
                 self.update(gradients)
-            self.mean_loss.append(float(total_loss * batch_size / n))  # type: ignore
+            self.mean_loss.append(float(total_loss * self.batch_size / n))  # type: ignore
+            if trial is not None:
+                validation_loss = self.get_loss_validation()
+                trial.report(validation_loss, epoch)
+                if trial.should_prune():
+                    raise optuna.TrialPruned()
         self.training_time = round(time.time() - start_time, 3)
         print(f"Training time: {self.training_time} seconds")
         self.show_loss()
@@ -190,6 +200,17 @@ class DeepNeuralNetwork:
         print(f"Train Accuracy: {train_accuracy * 100:.2f}%")
         failures = cp.where(test_predictions != test_labels)[0]  # type: ignore
         return failures, test_predictions  # type: ignore
+
+    def get_loss_validation(self) -> float:
+        """Get the loss of the model on the validation set
+
+        Returns:
+           float: The loss of the model on the validation set
+        """
+        validation_matrix, validation_labels = load_validation_mnist()
+        predictions = self.forward_propagation(validation_matrix)[-1]
+        loss = self.log_loss(predictions, validation_labels)
+        return float(loss)
 
     def predict(self, image_path: str) -> int:
         """Predict function, predict the digit in the image
@@ -259,14 +280,20 @@ class DeepNeuralNetwork:
         plt.legend(loc="upper right")
         plt.show()  # type: ignore
 
-    def save(self, filepath: str) -> None:
-        """Save the model
+    def export_bin(self, filepath: str) -> None:
+        """Export the model to a binary file
 
         Args:
-            filepath (str): The filepath to save the model (extension .pkl)
+            filepath (str): The path to the file where the model will be saved
         """
+        shapes = [list(weights.shape) for weights, _ in self.layers]
+        header = json.dumps({"shapes": shapes}).encode()
         with open(filepath, "wb") as file:
-            pickle.dump(self, file)
+            file.write(struct.pack("<I", len(header)))
+            file.write(header)
+            for weights, bias in self.layers:
+                file.write(np.ascontiguousarray(cp.asnumpy(weights), dtype="<f8").tobytes())
+                file.write(np.ascontiguousarray(cp.asnumpy(bias).ravel(), dtype="<f8").tobytes())
 
     @staticmethod
     def get_layers(
@@ -292,7 +319,7 @@ class DeepNeuralNetwork:
         return layers
 
 
-def load_train_mnist() -> tuple[Any, Any]:
+def load_full_train_mnist() -> tuple[Any, Any]:
     """Load the training MNIST dataset
 
     Returns:
@@ -303,6 +330,40 @@ def load_train_mnist() -> tuple[Any, Any]:
         keras.utils.to_categorical(  # type: ignore
             train_dataset[1]
         ).T
+    )
+
+
+def load_partial_train_mnist() -> tuple[Any, Any]:
+    """Load the training MNIST dataset
+
+    Returns:
+        tuple[Any, Any]: The training dataset
+    """
+    train_dataset = keras.datasets.mnist.load_data()[0]
+    return (
+        cp.asarray(train_dataset[0][:50000].reshape(50000, 784).T) / 255,
+        cp.asarray(  # type: ignore
+            keras.utils.to_categorical(  # type: ignore
+                train_dataset[1][:50000]
+            ).T
+        ),
+    )
+
+
+def load_validation_mnist() -> tuple[Any, Any]:
+    """Load the validation MNIST dataset
+
+    Returns:
+        tuple[Any, Any]: The validation dataset
+    """
+    validation_dataset = keras.datasets.mnist.load_data()[0]
+    return (
+        cp.asarray(validation_dataset[0][50000:].reshape(10000, 784).T) / 255,
+        cp.asarray(  # type: ignore
+            keras.utils.to_categorical(  # type: ignore
+                validation_dataset[1][50000:]
+            ).T
+        ),
     )
 
 
@@ -321,6 +382,47 @@ def load_test_mnist() -> tuple[Any, Any]:
 
 
 if __name__ == "__main__":
-    network = DeepNeuralNetwork()
+    # cp.random.seed(seed=18)
+
+    train_matrix, answer = load_full_train_mnist()
+    test_matrix, test_labels = load_test_mnist()
+
+    # def objective(trial: optuna.Trial) -> float:
+    #     """Objective function for Optuna hyperparameter optimization
+
+    #     Args:
+    #         trial (optuna.Trial): The trial object
+    #     """
+    #     nb_epoch = trial.suggest_int("num_epochs", 5, 30)
+    #     lr = trial.suggest_float("learning_rate", 1e-4, 1e-1, log=True)
+    #     nb_neurons = trial.suggest_categorical("num_neurons", [2, 4, 8, 16, 32, 64, 128, 256])
+    #     batch_size = trial.suggest_categorical("batch_size", [32, 64, 128, 256])
+    #     network = DeepNeuralNetwork(
+    #         nb_epoch=nb_epoch,
+    #         learning_rate=lr,
+    #         batch_size=batch_size,
+    #         hidden_layers=(nb_neurons,),
+    #     )
+
+    #     network.train(trial)
+    #     return network.get_loss_validation()
+
+    # study = optuna.create_study(direction="minimize", pruner=optuna.pruners.MedianPruner())
+    # study.optimize(objective, n_trials=300)
+
+    # print("Best trial:")
+    # print(f"  Value: {study.best_trial.value}")
+    # print(f"  Params: {study.best_trial.params}")
+
+    # optuna.visualization.plot_optimization_history(study).write_html(
+    #     "optuna_optimization_history_2.html"
+    # )
+    # optuna.visualization.plot_param_importances(study).write_html("optuna_param_importances_2.html")
+    network = DeepNeuralNetwork(
+        nb_epoch=13,
+        learning_rate=0.05427895094134185,
+        batch_size=64,
+        hidden_layers=(256,),
+    )
     network.train()
-    network.test()
+    network.export_bin("dnn_model.bin")
