@@ -3,7 +3,7 @@
 ![Static Badge](https://img.shields.io/badge/made_in-France-red?labelColor=blue)
 ![Static Badge](https://img.shields.io/badge/language-Python-f7d54d?labelColor=4771a4)
 
-This repository contains a severals neural network that can recognize handwritten digits from the MNIST dataset. Neural networks are either made from scratch using only the **CuPy** library, either build with the frameworks **PyTorch**.
+This repository contains severals neural network that can recognize handwritten digits from the MNIST dataset. Neural networks are either made from scratch using only the **CuPy** library, either build with the frameworks **PyTorch**.
 
 > [!NOTE]
 > The MNIST dataset is a dataset of 60,000 small square 28x28 pixel grayscale images of handwritten single digits between 0 and 9. The dataset also includes a test set of 10,000 images.
@@ -11,6 +11,9 @@ This repository contains a severals neural network that can recognize handwritte
 > CuPy is an open-source array library accelerated with NVIDIA CUDA. It allows you to perform operations on a GPU. It is a drop-in replacement for NumPy.
 >
 > TensorFlow was not used in this project because I couldn't find a way to make it work with my GPU.
+>
+> [!IMPORTANT]
+> The code is a bit messy because my goal wasn't to have a perfect code but just to play and learn about neural network.
 
 ## Summary
 
@@ -58,14 +61,15 @@ And here's what the loss and precision curves roughly look like for both version
 
 ### Here are tables comparing the performance of the different models
 
-|      Framework      | Hidden Layers | Accuracy | Training Time | Epochs | Learning Rate | Number of weights | Number of biases | Device |
-| :-----------------: | :-----------: | :------: | :-----------: | :----: | :-----------: | :---------------: | :--------------: | :----: |
-|  Linear Classifier  |     None      |   ~88%   |     ~4.7s     |  100   |       1       |       7 840       |        10        |  GPU   |
-|         DNN         |     32-32     |   ~60%   |     ~40s      |  500   |      0.1      |      26 432       |        74        |  GPU   |
-| + He initialization |     32-32     |   ~93%   |     ~40s      |  500   |      0.1      |      26 432       |        74        |  GPU   |
-|    + mini-batch     |     32-32     |   ~96%   |     ~14s      |   5    |      0.1      |      26 432       |        74        |  GPU   |
-|                     |    256-256    |   ~97%   |     ~28s      |   10   |     0.03      |      254 464      |       522        |  GPU   |
-|     + momentum      |    256-256    |   ~98%   |     ~35s      |   10   |     0.03      |      254 464      |       522        |  GPU   |
+|      Framework      | Hidden Layers | Accuracy | Training Time | Epochs | Batch Size | Learning Rate | Number of weights | Number of biases | Device |
+| :-----------------: | :-----------: | :------: | :-----------: | :----: | :--------: | :-----------: | :---------------: | :--------------: | :----: |
+|  Linear Classifier  |     None      |   ~88%   |     ~4.7s     |  100   |            |       1       |       7 840       |        10        |  GPU   |
+|         DNN         |     32-32     |   ~60%   |     ~40s      |  500   |            |      0.1      |      26 432       |        74        |  GPU   |
+| + He initialization |     32-32     |   ~93%   |     ~40s      |  500   |            |      0.1      |      26 432       |        74        |  GPU   |
+|    + mini-batch     |     32-32     |   ~96%   |     ~14s      |   5    |     64     |      0.1      |      26 432       |        74        |  GPU   |
+|                     |    256-256    |   ~97%   |     ~28s      |   10   |     64     |     0.03      |      254 464      |       522        |  GPU   |
+|     + momentum      |    256-256    |   ~98%   |     ~35s      |   10   |     64     |     0.03      |      254 464      |       522        |  GPU   |
+|      + optuna       |      256      |   ~98%   |     ~30s      |   13   |     64     |    ~0.054     |      203 264      |       266        |  GPU   |
 
 > [!NOTE]
 > These values can change depending on the version of Python and your PC
