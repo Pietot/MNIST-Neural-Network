@@ -90,17 +90,13 @@ canvas {
   color: var(--ink);
 }
 
-.row span:last-child {
-  font-variant-numeric: tabular-nums;
-}
-
 .bar {
   position: absolute;
   left: 0;
   bottom: -6px;
   height: 5px;
   background: var(--bar);
-  transition: width 0.12s;
+  transition: width 0.2s;
   border-radius: 5px;
 }
 

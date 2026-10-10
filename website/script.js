@@ -125,18 +125,36 @@
     });
     return a;
   }
-  const rowsEl = document.getElementById("rows");
-  function show(p) {
-    const order = NAMES.map((n, i) => [n, p ? p[i] : 0]).sort(
-      (a, b) => b[1] - a[1],
-    );
-    rowsEl.innerHTML = order
-      .map(
-        (r, i) =>
-          `<div class="row${i === 0 && p ? " top" : ""}"><span>${r[0]}</span><span>${(r[1] * 100).toFixed(2)}%</span><i class="bar" style="width:${(r[1] * 100).toFixed(1)}%"></i></div>`,
-      )
-      .join("");
-  }
+const rowsEl = document.getElementById("rows");
+
+// Création unique : un élément par chiffre, jamais reconstruit
+const rowEls = NAMES.map((name) => {
+  const row = document.createElement("div");
+  row.className = "row";
+  row.innerHTML = `<span>${name}</span><span class="pct">0.00%</span><i class="bar"></i>`;
+  rowsEl.appendChild(row);
+  return {
+    row,
+    pct: row.querySelector(".pct"),
+    bar: row.querySelector(".bar"),
+  };
+});
+
+function show(p) {
+  const probs = p || new Array(10).fill(0);
+  const ranking = probs.map((_, i) => i).sort((a, b) => probs[b] - probs[a]);
+
+  // Le tri passe par `order` (CSS), sans déplacer les éléments
+  ranking.forEach((digit, rank) => {
+    rowEls[digit].row.style.order = rank;
+  });
+
+  rowEls.forEach((r, i) => {
+    r.pct.textContent = `${(probs[i] * 100).toFixed(2)}%`;
+    r.bar.style.width = `${probs[i] * 100}%`;
+    r.row.classList.toggle("top", !!p && i === ranking[0]);
+  });
+}
   let pending = false;
   function update() {
     render();
