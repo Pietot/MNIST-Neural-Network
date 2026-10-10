@@ -26,6 +26,14 @@ body {
   padding: 16px;
 }
 
+#orientation-message {
+  display: none;
+  margin: 0;
+  color: var(--ink);
+  text-align: center;
+  font-size: 1.1rem;
+}
+
 .panel {
   background: var(--panel);
   border: 1px solid var(--dim);
@@ -143,5 +151,15 @@ button.clear {
   .panel {
     padding: 16px;
     gap: 20px;
+  }
+}
+
+@media (orientation: portrait) {
+  #orientation-message {
+    display: block;
+  }
+
+  .panel {
+    display: none;
   }
 }
