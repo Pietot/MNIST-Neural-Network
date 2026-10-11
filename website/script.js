@@ -1,4 +1,3 @@
-/* Load the model inside an async function so this also works in a classic script. */
 (async () => {
   let layers;
   let model = null;
@@ -42,7 +41,6 @@
       }
   }
 
-  // Pinceau : centre plein, voisins directs adoucis (proche du trait MNIST)
   function stamp(cx, cy, erase) {
     for (let dy = -1; dy <= 1; dy++)
       for (let dx = -1; dx <= 1; dx++) {
@@ -54,6 +52,7 @@
         grid[i] = erase ? 0 : Math.min(1, Math.max(grid[i], w));
       }
   }
+
   function cell(e) {
     const r = cv.getBoundingClientRect();
     return [
@@ -67,6 +66,7 @@
       ),
     ];
   }
+
   function line(a, b, erase) {
     const n = Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1]), 1);
     for (let t = 0; t <= n; t++)
@@ -96,6 +96,7 @@
       drawing = null;
     }),
   );
+
   function clearAll() {
     grid.fill(0);
     update();
@@ -104,7 +105,6 @@
     if (e.key === "c" || e.key === "C") clearAll();
   });
 
-  // Réseau : ReLU sur les couches cachées, softmax en sortie
   function predict(x) {
     let a = Array.from(x);
     model.forEach((L, k) => {
@@ -125,36 +125,34 @@
     });
     return a;
   }
-const rowsEl = document.getElementById("rows");
+  const rowsEl = document.getElementById("rows");
 
-// Création unique : un élément par chiffre, jamais reconstruit
-const rowEls = NAMES.map((name) => {
-  const row = document.createElement("div");
-  row.className = "row";
-  row.innerHTML = `<span>${name}</span><span class="pct">0.00%</span><i class="bar"></i>`;
-  rowsEl.appendChild(row);
-  return {
-    row,
-    pct: row.querySelector(".pct"),
-    bar: row.querySelector(".bar"),
-  };
-});
-
-function show(p) {
-  const probs = p || new Array(10).fill(0);
-  const ranking = probs.map((_, i) => i).sort((a, b) => probs[b] - probs[a]);
-
-  // Le tri passe par `order` (CSS), sans déplacer les éléments
-  ranking.forEach((digit, rank) => {
-    rowEls[digit].row.style.order = rank;
+  const rowEls = NAMES.map((name) => {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<span>${name}</span><span class="pct">0.00%</span><i class="bar"></i>`;
+    rowsEl.appendChild(row);
+    return {
+      row,
+      pct: row.querySelector(".pct"),
+      bar: row.querySelector(".bar"),
+    };
   });
 
-  rowEls.forEach((r, i) => {
-    r.pct.textContent = `${(probs[i] * 100).toFixed(2)}%`;
-    r.bar.style.width = `${probs[i] * 100}%`;
-    r.row.classList.toggle("top", !!p && i === ranking[0]);
-  });
-}
+  function show(p) {
+    const probs = p || new Array(10).fill(0);
+    const ranking = probs.map((_, i) => i).sort((a, b) => probs[b] - probs[a]);
+
+    ranking.forEach((digit, rank) => {
+      rowEls[digit].row.style.order = rank;
+    });
+
+    rowEls.forEach((r, i) => {
+      r.pct.textContent = `${(probs[i] * 100).toFixed(2)}%`;
+      r.bar.style.width = `${probs[i] * 100}%`;
+      r.row.classList.toggle("top", !!p && i === ranking[0]);
+    });
+  }
   let pending = false;
   function update() {
     render();
