@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <button id="info-btn">
+      <img src="info.svg" alt="Info" style="width: 100px" />
+    </button>
     <p id="orientation-message" role="status">
       Please rotate your screen to landscape mode to use the application.
     </p>
@@ -22,6 +25,49 @@
       ></canvas>
       <div class="right">
         <div id="rows"></div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal" id="modal">
+        <button class="modal-close" id="modal-close">&times;</button>
+        <div class="modal-header">
+          <button class="modal-tab active" data-section="section-1">
+            About
+          </button>
+        </div>
+        <div class="modal-content">
+          <section id="section-1" class="modal-section active">
+            <h2>About</h2>
+            <p>
+              This is a simple web application that allows you to draw on a
+              canvas and recognizes your handwriting. It uses a machine learning
+              model to interpret the strokes and provide feedback on what the
+              model thinks you wrote.
+            </p>
+
+            <p>
+              The model was trained on the
+              <a
+                href="https://www.kaggle.com/datasets/hojjatk/mnist-dataset"
+                target="_blank"
+                >MNIST dataset</a
+              >
+              and has an accuracy of +98% on the test set. Despite this, the
+              model may not always recognize your handwriting correctly,
+              especially if it is messy or unconventional.
+            </p>
+
+            <p>
+              More information about the model at
+              <a
+                href="https://www.kaggle.com/datasets/hojjatk/mnist-dataset"
+                target="_blank"
+                >here</a
+              >.
+            </p>
+          </section>
+        </div>
       </div>
     </div>
     <script src="script.js"></script>

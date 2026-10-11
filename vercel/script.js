@@ -167,3 +167,46 @@
   render();
   show(null);
 })();
+
+const modalOverlay = document.getElementById("modal-overlay");
+const modal = document.getElementById("modal");
+const modalCloseBtn = document.getElementById("modal-close");
+const infoBtn = document.getElementById("info-btn");
+const modalTabs = document.querySelectorAll(".modal-tab");
+const modalSections = document.querySelectorAll(".modal-section");
+
+function openModal() {
+  modalOverlay.classList.add("show");
+}
+
+function closeModal() {
+  modalOverlay.classList.remove("show");
+}
+
+function switchSection(sectionId) {
+  modalTabs.forEach((tab) => tab.classList.remove("active"));
+  modalSections.forEach((section) => section.classList.remove("active"));
+
+  document
+    .querySelector(`[data-section="${sectionId}"]`)
+    ?.classList.add("active");
+  document.getElementById(sectionId)?.classList.add("active");
+}
+
+infoBtn.addEventListener("click", openModal);
+modalCloseBtn.addEventListener("click", closeModal);
+
+modalOverlay.addEventListener("click", (e) => {
+  if (e.target === modalOverlay) closeModal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModal();
+});
+
+modalTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    const sectionId = tab.dataset.section;
+    switchSection(sectionId);
+  });
+});
