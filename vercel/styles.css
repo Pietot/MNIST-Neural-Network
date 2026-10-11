@@ -199,6 +199,10 @@ canvas {
   flex-shrink: 0;
 }
 
+.modal-header button {
+  flex: 1;
+}
+
 .modal-tab {
   padding: 19px 12px;
   background: transparent;
@@ -257,6 +261,11 @@ canvas {
   color: var(--text);
   line-height: 1.6;
   margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+.modal-section ul {
+  color: var(--text);
   font-size: 1.1rem;
 }
 
